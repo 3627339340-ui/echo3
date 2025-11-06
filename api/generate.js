@@ -1,47 +1,27 @@
-// server.js
-import express from "express";
-import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
+import axios from "axios";
 import dotenv from "dotenv";
-import { generateReply } from "./api/generate.js"; // named export — fixed
-import voiceRouter from "./api/voice.js"; // optional voice route (created below)
-
 dotenv.config();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const ZHIPU_API_KEY = process.env.ZHIPU_API_KEY;
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
-
-// API: generate a letter
-app.post("/api/generate", async (req, res) => {
+export async function generateReply(prompt) {
   try {
-    const { message } = req.body || {};
-    if (!message || typeof message !== "string" || message.trim().length === 0) {
-      return res.status(400).json({ error: "请输入要发送给未来自己的内容（message）。" });
-    }
-
-    const reply = await generateReply(message.trim());
-    return res.json({ reply });
+    const response = await axios.post(
+      "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+      {
+        model: "glm-4-flash", // 智谱快速高效模型
+        messages: [{ role: "user", content: prompt }]
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${ZHIPU_API_KEY}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+    return response.data.choices[0].message.content;
   } catch (err) {
-    console.error("ERROR /api/generate:", err);
-    return res.status(500).json({ error: "生成失败，请稍后重试。" });
+    console.error("❌ Zhipu API error:", err.response?.data || err.message);
+    return "生成失败，请检查智谱 API 密钥或稍后再试。";
   }
-});
-
-// Optional: server-side voice endpoint (returns audio/mpeg) — implemented in api/voice.js
-app.use("/api/voice", voiceRouter);
-
-// Fallback route to index.html (for static single-page)
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`✅ future-echo server started on port ${PORT}`);
-});
+}
