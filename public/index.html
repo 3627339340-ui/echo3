@@ -1,272 +1,55 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>未来回音 💌</title>
-<style>
-  :root{
-    --glass-bg: rgba(255,255,255,0.32);
-    --glass-hover: rgba(255,255,255,0.54);
-    --accent: #ff8fb3;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:"PingFang SC","SF Pro Display",sans-serif;-webkit-font-smoothing:antialiased}
-  body{
-    display:flex;align-items:center;justify-content:center;flex-direction:column;
-    background: radial-gradient(circle at center, #fff0f3 60%, #ffb7d1 85%, #b44b6a 100%);
-    transition:background 900ms ease;
-    color:#222;
-    overflow:hidden;
-  }
+import express from "express";
+import fetch from "node-fetch";
+import path from "path";
+import dotenv from "dotenv";
+import { fileURLToPath } from "url";
 
-  /* 信封开场 */
-  .envelope-wrap{position:relative;z-index:3}
-  .envelope{
-    width:240px;height:160px;border-radius:12px;background:#fff;border:2px solid rgba(255,255,255,0.9);
-    box-shadow:0 14px 40px rgba(180,60,100,0.18);
-    display:flex;align-items:center;justify-content:center;cursor:pointer;
-    transform-origin:center; animation:envelope-sway 1.8s ease-in-out infinite alternate;
-  }
-  .envelope::before{
-    content:"";position:absolute;left:0;right:0;margin:auto;top:-120px;border-left:120px solid transparent;border-right:120px solid transparent;border-bottom:70px solid #fff;border-radius:4px;
-  }
-  @keyframes envelope-sway{0%{transform:rotate(0deg)}50%{transform:rotate(2deg)}100%{transform:rotate(-2deg)}}
-  .envelope.fade{opacity:0;transform:scale(.9);transition:all 700ms ease}
+dotenv.config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-  /* 主区域（标题、输入、信纸） */
-  .main{display:none;flex-direction:column;align-items:center;z-index:2;width:92%;max-width:720px;margin-top:2vh}
-  h1{margin:0;margin-top:6vh;font-size:3rem;color:#fff;letter-spacing:2px;text-align:center;text-shadow:0 6px 22px rgba(255,150,170,0.25)}
-  .panel{
-    margin-top:28px;width:100%;background:var(--glass-bg);backdrop-filter:blur(12px);border-radius:20px;padding:24px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.12);
-  }
+const app = express();
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
 
-  textarea{
-    width:100%;min-height:150px;border-radius:12px;border:none;padding:16px;font-size:16px;resize:vertical;background:rgba(255,255,255,0.72);outline:none;color:#222;
-  }
+app.post("/api/generate", async (req, res) => {
+  try {
+    const prompt = req.body.prompt || "";
+    const apiKey = process.env.ZHIPU_API_KEY;
+    if (!apiKey) return res.status(500).json({ error: "ZHIPU_API_KEY 未设置" });
 
-  .controls{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin-top:14px}
-  .btn{
-    border:none;padding:10px 18px;border-radius:999px;background:var(--glass-bg);backdrop-filter:blur(10px);cursor:pointer;color:#fff;font-weight:600;
-    transition:background .2s, transform .12s;
-  }
-  .btn:hover{background:var(--glass-hover)}
-  .btn:active{transform:translateY(1px)}
+    const systemMsg = `你是“未来的我”。请以书信格式（称呼、正文、结束语和署名）写一封信，语气温柔真诚，富有鼓励性，给现在的我一些安慰和启发。中文字数不少于200字。`;
 
-  /* 信纸区域 */
-  .letter{
-    display:none;margin-top:20px;width:100%;max-height:420px;overflow:auto;background:rgba(255,255,255,0.92);padding:22px;border-radius:16px;color:#222;box-shadow:0 10px 30px rgba(0,0,0,0.08);
-  }
-  .letter pre{white-space:pre-wrap;margin:0;font-size:16px;line-height:1.7}
-
-  /* 小按钮样式统一为磨砂白半透明 */
-  .small{padding:8px 14px;border-radius:14px;font-size:15px}
-
-  /* 音频/播放状态视觉 */
-  #playBtn.playing{background:linear-gradient(90deg,#ff99b7,#ffcbd6);color:#6b0036}
-
-  /* 响应 */
-  @media (max-width:520px){
-    h1{font-size:2rem}
-    .envelope{width:180px;height:120px}
-  }
-</style>
-</head>
-<body>
-  <!-- 开场信封 -->
-  <div class="envelope-wrap">
-    <div class="envelope" id="envelope">💌</div>
-  </div>
-
-  <!-- 主内容 -->
-  <div class="main" id="mainUI" role="main" aria-live="polite">
-    <h1>未来回音 💌</h1>
-
-    <div class="panel" id="panel">
-      <textarea id="userInput" placeholder="把你这一刻想对未来的自己说的话写下来..."></textarea>
-
-      <div class="controls" style="justify-content:space-between">
-        <div style="display:flex;gap:8px;align-items:center">
-          <button class="btn small" id="bgHint" title="点击背景空白处可切换背景（不会在输入/回信区触发）">背景：点击区域外切换</button>
-        </div>
-        <div style="display:flex;gap:10px">
-          <button class="btn small" id="generateBtn">生成未来回信</button>
-        </div>
-      </div>
-    </div>
-
-    <div class="letter" id="letterBox" aria-hidden="true">
-      <pre id="replyText"></pre>
-      <div class="controls" style="justify-content:flex-end;margin-top:16px">
-        <button class="btn small" id="playBtn">播放语音</button>
-        <button class="btn small" id="stopBtn" style="display:none">停止播放</button>
-        <button class="btn small" id="closeBtn">收起回信</button>
-      </div>
-    </div>
-  </div>
-
-<script>
-(() => {
-  // elements
-  const envelope = document.getElementById('envelope');
-  const mainUI = document.getElementById('mainUI');
-  const generateBtn = document.getElementById('generateBtn');
-  const userInput = document.getElementById('userInput');
-  const letterBox = document.getElementById('letterBox');
-  const replyText = document.getElementById('replyText');
-  const playBtn = document.getElementById('playBtn');
-  const stopBtn = document.getElementById('stopBtn');
-  const closeBtn = document.getElementById('closeBtn');
-  const panel = document.getElementById('panel');
-
-  let utter = null;
-  let isPlaying = false;
-
-  // open envelope either click or auto after 3s
-  function openEnvelope() {
-    if (envelope.dataset.opened) return;
-    envelope.dataset.opened = '1';
-    envelope.classList.add('fade');
-    setTimeout(() => {
-      envelope.style.display = 'none';
-      mainUI.style.display = 'flex';
-      // focus input
-      setTimeout(()=>userInput.focus(), 200);
-    }, 700);
-  }
-  envelope.addEventListener('click', openEnvelope);
-  setTimeout(() => openEnvelope(), 3000);
-
-  // helper: only change background when clicking outside input and letter
-  function bodyClickHandler(e) {
-    const target = e.target;
-    if (panel.contains(target) || letterBox.contains(target) || envelope.contains(target)) {
-      // inside input/letter/envelope => do nothing
-      return;
-    }
-    // change to a softer warm gradient with gentle transition
-    const choices = [
-      'radial-gradient(circle at center, #fff6f8 60%, #ffc8db 90%, #bd4060 100%)',
-      'radial-gradient(circle at center, #fff7ee 60%, #ffd2b2 90%, #c65b4a 100%)',
-      'radial-gradient(circle at center, #fff0f5 60%, #ffbcd3 90%, #b64b70 100%)'
-    ];
-    const g = choices[Math.floor(Math.random()*choices.length)];
-    document.body.style.background = g;
-  }
-  document.body.addEventListener('click', bodyClickHandler, false);
-
-  // generate reply via backend
-  generateBtn.addEventListener('click', async () => {
-    const text = userInput.value.trim();
-    if (!text) { alert('请先写下你的心声 😊'); userInput.focus(); return; }
-
-    // hide any previous
-    letterBox.style.display = 'none';
-    replyText.textContent = '正在向未来索取回信，请稍候……';
-
-    // call server API
-    try {
-      const res = await fetch('/api/generate', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ prompt: text })
-      });
-      const data = await res.json();
-      const reply = (data && data.reply) ? data.reply : '未来的信件暂时无法送达，请稍后再试。';
-      // display as letter (preserve newlines)
-      replyText.textContent = reply;
-      letterBox.style.display = 'block';
-      letterBox.setAttribute('aria-hidden','false');
-      // scroll to top
-      letterBox.scrollTop = 0;
-      // auto focus: do not change background logic
-      // ensure play/stop buttons initial state
-      playBtn.style.display = 'inline-block';
-      stopBtn.style.display = 'none';
-      isPlaying = false;
-      if (utter) { speechSynthesis.cancel(); utter = null; }
-    } catch (err) {
-      console.error(err);
-      replyText.textContent = '网络或服务异常，生成失败，请稍后重试。';
-      letterBox.style.display = 'block';
-    }
-  });
-
-  // play / stop logic (button overlay behavior)
-  playBtn.addEventListener('click', () => {
-    const text = replyText.textContent.trim();
-    if (!text) return;
-    // create utterance
-    utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'zh-CN';
-    utter.rate = 1;
-    utter.pitch = 1;
-    // try to pick a suitable voice (prefer Chinese)
-    const voices = speechSynthesis.getVoices();
-    if (voices && voices.length) {
-      const zh = voices.find(v => /zh|Chinese/i.test(v.lang) || /Chinese|女|女声|男性|male|female/i.test(v.name));
-      if (zh) utter.voice = zh;
-    }
-    // switch UI
-    isPlaying = true;
-    playBtn.style.display = 'none';
-    stopBtn.style.display = 'inline-block';
-    // speak
-    speechSynthesis.speak(utter);
-
-    // on end or on error: restore
-    const done = () => {
-      isPlaying = false;
-      playBtn.style.display = 'inline-block';
-      stopBtn.style.display = 'none';
-      utter = null;
+    const body = {
+      model: "glm-4-flash",
+      messages: [
+        { role: "system", content: systemMsg },
+        { role: "user", content: prompt || "我现在有些迷茫，请未来的我给我一封信。" }
+      ],
+      max_tokens: 800,
+      temperature: 0.85
     };
-    utter.onend = done;
-    utter.onerror = () => {
-      console.error('speech error');
-      done();
-    };
-  });
 
-  // stop button directly stops and restores UI
-  stopBtn.addEventListener('click', () => {
-    if (utter) {
-      speechSynthesis.cancel();
-      // onend will trigger; but restore immediately
-      isPlaying = false;
-      playBtn.style.display = 'inline-block';
-      stopBtn.style.display = 'none';
-      utter = null;
-    }
-  });
+    const resp = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`
+      },
+      body: JSON.stringify(body)
+    });
 
-  // ensure that if speechSynthesis ends unexpectedly, UI resets
-  window.speechSynthesis.onend = () => {
-    isPlaying = false;
-    playBtn.style.display = 'inline-block';
-    stopBtn.style.display = 'none';
-    utter = null;
-  };
+    const data = await resp.json();
+    const reply = data?.choices?.[0]?.message?.content?.trim() ||
+      "未来的信件暂时无法生成，请稍后再试。";
 
-  // close (收起回信) => return to input area instantly
-  closeBtn.addEventListener('click', () => {
-    // stop any playing audio
-    if (utter) { speechSynthesis.cancel(); utter = null; }
-    letterBox.style.display = 'none';
-    userInput.focus();
-    // keep input area visible (it's always visible)
-    // scroll to top of panel
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  });
-
-  // prevent body click handler from firing while clicking inside input or letter: already checked in handler via contains()
-
-  // ensure voices are loaded (some browsers load asynchronously)
-  if (speechSynthesis.onvoiceschanged !== undefined) {
-    speechSynthesis.onvoiceschanged = () => { /* voices ready */ };
+    res.json({ reply });
+  } catch (e) {
+    console.error("生成失败：", e);
+    res.status(500).json({ error: "生成失败" });
   }
-})();
-</script>
-</body>
-</html>
+});
+
+app.listen(process.env.PORT || 3000, () =>
+  console.log("✅ Server running on port", process.env.PORT || 3000)
+);
