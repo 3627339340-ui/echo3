@@ -1,231 +1,201 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>未来回音 💌</title>
-<style>
-html,body {
-  margin:0;
-  height:100%;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  flex-direction:column;
-  overflow:hidden;
-  font-family:"PingFang SC","SF Pro Display",sans-serif;
-  background: radial-gradient(circle at 50% 40%, #ffe0ea 35%, #f8a8b8 75%, #a75769 100%);
-  animation: gradientMove 10s ease-in-out infinite alternate;
-}
-@keyframes gradientMove {
-  0% { background: radial-gradient(circle at 45% 40%, #ffdfe9 40%, #f7a6b7 70%, #b96b7c 100%); }
-  100% { background: radial-gradient(circle at 55% 45%, #ffe5ed 30%, #f8b3c1 65%, #8f4f61 100%); }
-}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>未来回音 💌</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "PingFang SC", "Segoe UI", sans-serif;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(180deg, #ffe6eb 0%, #fff4f7 50%, #ffe6eb 100%);
+      transition: background 1s ease;
+      overflow: hidden;
+    }
 
-/* 信封外观 */
-.envelope {
-  position: relative;
-  width: 260px;
-  height: 170px;
-  background: linear-gradient(180deg, #ffffff 0%, #f4f4f4 100%);
-  border-radius: 14px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-  cursor: pointer;
-  perspective: 800px;
-  animation: shake 3s ease-in-out infinite alternate;
-}
-@keyframes shake {
-  0%,100% { transform: rotate(0deg); }
-  50% { transform: rotate(1.4deg); }
-}
-.envelope:before, .envelope:after {
-  content: "";
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 85px;
-  background: linear-gradient(to bottom, #ffffff 0%, #f1f1f1 100%);
-  border-radius: 14px 14px 0 0;
-}
-.envelope:after {
-  top: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  transition: transform 1s ease;
-  transform-origin: top;
-  box-shadow: inset 0 -2px 5px rgba(0,0,0,0.05);
-}
-.envelope.open:after {
-  transform: rotateX(160deg);
-}
-.envelope-glow {
-  position:absolute;
-  inset:0;
-  border-radius:14px;
-  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, transparent 70%);
-  opacity:0;
-  animation: glow 1.5s ease-out;
-}
-@keyframes glow {
-  from {opacity:0.8; transform:scale(0.9);}
-  to {opacity:0; transform:scale(1.4);}
-}
+    .container {
+      text-align: center;
+      animation: fadeIn 2s ease;
+    }
 
-/* 主标题 */
-h1 {
-  color:#fff;
-  font-size:2.5rem;
-  font-weight:700;
-  letter-spacing:2px;
-  text-shadow:0 3px 25px rgba(0,0,0,0.3);
-  margin:4vh 0 2vh;
-}
+    h1 {
+      font-size: 2.2em;
+      color: #d46a7e;
+      letter-spacing: 3px;
+      margin-bottom: 25px;
+      animation: floatTitle 3s ease-in-out infinite;
+    }
 
-/* 主体 */
-.main {
-  display:none;
-  flex-direction:column;
-  align-items:center;
-}
-.panel {
-  background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(15px);
-  border-radius:22px;
-  padding:20px;
-  width:90%;
-  max-width:700px;
-  box-shadow:0 6px 25px rgba(0,0,0,0.12);
-}
-textarea {
-  width:100%;
-  min-height:230px;
-  padding:15px;
-  border:none;
-  border-radius:12px;
-  resize:vertical;
-  background: rgba(255,255,255,0.85);
-  font-size:16px;
-  outline:none;
-}
+    @keyframes floatTitle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
 
-/* 按钮 */
-button {
-  border:none;
-  border-radius:18px;
-  padding:10px 22px;
-  margin:8px;
-  color:#fff;
-  font-weight:600;
-  background: rgba(255,255,255,0.3);
-  backdrop-filter: blur(10px);
-  cursor:pointer;
-  transition: all 0.3s ease;
-}
-button:hover { background: rgba(255,255,255,0.45); }
+    .letter {
+      background: rgba(255, 255, 255, 0.85);
+      box-shadow: 0 8px 20px rgba(255, 182, 193, 0.3);
+      border-radius: 20px;
+      padding: 25px;
+      width: 90%;
+      max-width: 480px;
+      margin: 0 auto 20px;
+      backdrop-filter: blur(6px);
+      transition: all 0.6s ease;
+    }
 
-/* 回信信纸 */
-#letter {
-  display:none;
-  margin-top:20px;
-  background: rgba(255,255,255,0.96);
-  border-radius:18px;
-  padding:22px;
-  width:90%;
-  max-width:700px;
-  max-height:400px;
-  overflow-y:auto;
-  box-shadow:0 8px 25px rgba(0,0,0,0.15);
-  animation: fadeIn 1s ease forwards;
-}
-@keyframes fadeIn {
-  from {opacity:0; transform:translateY(10px);}
-  to {opacity:1; transform:translateY(0);}
-}
-pre {
-  white-space: pre-wrap;
-  font-size:16px;
-  line-height:1.8;
-}
-</style>
+    textarea {
+      width: 100%;
+      height: 160px;
+      border: none;
+      border-radius: 15px;
+      padding: 15px;
+      resize: none;
+      font-size: 16px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: inset 0 0 10px rgba(255, 182, 193, 0.2);
+      outline: none;
+      transition: box-shadow 0.3s;
+    }
+
+    textarea:focus {
+      box-shadow: 0 0 10px rgba(255, 128, 160, 0.5);
+    }
+
+    button {
+      background-color: #f9a8b8;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #f47c96;
+      transform: scale(1.05);
+    }
+
+    .reply-box {
+      margin-top: 25px;
+      white-space: pre-wrap;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 8px 15px rgba(255, 150, 170, 0.3);
+      font-size: 15px;
+      color: #333;
+      line-height: 1.8;
+      max-width: 480px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .controls {
+      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .controls button {
+      padding: 8px 18px;
+      font-size: 14px;
+      border-radius: 20px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1>未来回音 💌</h1>
 
-<div class="envelope" id="envelope">
-  <div class="envelope-glow" id="glow"></div>
-</div>
+    <div class="letter">
+      <textarea id="userInput" placeholder="给未来的自己写下想说的话..."></textarea>
+      <br />
+      <button id="generateBtn">生成未来回信</button>
+    </div>
 
-<div class="main" id="main">
-  <h1>未来回音 💌</h1>
-  <div class="panel">
-    <textarea id="input" placeholder="写下你现在想说的话吧..."></textarea>
-    <div style="text-align:center;">
-      <button id="generate">生成未来回信</button>
+    <div id="replyBox" class="reply-box" style="display:none;"></div>
+    <div class="controls" id="controls" style="display:none;">
+      <button id="playAudio">🔊 播放语音</button>
+      <button id="stopAudio" style="display:none;">⏹ 停止播放</button>
+      <button id="collapseBtn">📩 收起回信</button>
     </div>
   </div>
 
-  <div id="letter">
-    <pre id="replyText"></pre>
-    <div style="text-align:center;">
-      <button id="play">播放语音</button>
-      <button id="stop" style="display:none;">停止播放</button>
-      <button id="close">收起回信</button>
-    </div>
-  </div>
-</div>
+  <script>
+    const generateBtn = document.getElementById("generateBtn");
+    const userInput = document.getElementById("userInput");
+    const replyBox = document.getElementById("replyBox");
+    const controls = document.getElementById("controls");
+    const playAudioBtn = document.getElementById("playAudio");
+    const stopAudioBtn = document.getElementById("stopAudio");
+    const collapseBtn = document.getElementById("collapseBtn");
+    let audio;
 
-<script>
-const envelope=document.getElementById("envelope");
-const glow=document.getElementById("glow");
-const main=document.getElementById("main");
-const input=document.getElementById("input");
-const generateBtn=document.getElementById("generate");
-const letter=document.getElementById("letter");
-const replyText=document.getElementById("replyText");
-const playBtn=document.getElementById("play");
-const stopBtn=document.getElementById("stop");
-const closeBtn=document.getElementById("close");
-let utter=null;
+    generateBtn.onclick = async () => {
+      const text = userInput.value.trim();
+      if (!text) return alert("请先写点给未来的话 💬");
 
-function openEnvelope(){
-  envelope.classList.add("open");
-  glow.style.opacity="1";
-  setTimeout(()=>{
-    glow.style.opacity="0";
-    envelope.style.opacity="0";
-  },1000);
-  setTimeout(()=>{
-    envelope.style.display="none";
-    main.style.display="flex";
-  },1600);
-}
-envelope.addEventListener("click",openEnvelope);
-setTimeout(openEnvelope,3000);
+      replyBox.style.display = "none";
+      controls.style.display = "none";
+      generateBtn.textContent = "正在生成中...";
+      generateBtn.disabled = true;
 
-generateBtn.onclick=async()=>{
-  const text=input.value.trim();
-  if(!text){alert("请先写下你的心声");return;}
-  replyText.textContent="未来的你正在写信中……";
-  letter.style.display="block";
-  const res=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:text})});
-  const data=await res.json();
-  replyText.textContent=data.reply || "未来的你说：要继续勇敢前行。";
-  playBtn.style.display="inline-block";
-  stopBtn.style.display="none";
-};
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: text })
+      });
+      const data = await res.json();
 
-playBtn.onclick=()=>{
-  const text=replyText.textContent;
-  utter=new SpeechSynthesisUtterance(text);
-  utter.lang="zh-CN";
-  speechSynthesis.speak(utter);
-  playBtn.style.display="none";
-  stopBtn.style.display="inline-block";
-  utter.onend=()=>{
-    playBtn.style.display="inline-block";
-    stopBtn.style.display="none";
-  };
-};
-stopBtn.onclick=()=>{speechSynthesis.cancel();playBtn.style.display="inline-block";stopBtn.style.display="none";};
-closeBtn.onclick=()=>{speechSynthesis.cancel();letter.style.display="none";};
-</script>
+      replyBox.textContent = data.reply || "未来的你暂时沉默...";
+      replyBox.style.display = "block";
+      controls.style.display = "flex";
+      generateBtn.textContent = "生成未来回信";
+      generateBtn.disabled = false;
+    };
+
+    playAudioBtn.onclick = async () => {
+      const text = replyBox.textContent;
+      playAudioBtn.style.display = "none";
+      stopAudioBtn.style.display = "inline-block";
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = "zh-CN";
+      utterance.onend = () => {
+        playAudioBtn.style.display = "inline-block";
+        stopAudioBtn.style.display = "none";
+      };
+      audio = utterance;
+      speechSynthesis.speak(utterance);
+    };
+
+    stopAudioBtn.onclick = () => {
+      speechSynthesis.cancel();
+      playAudioBtn.style.display = "inline-block";
+      stopAudioBtn.style.display = "none";
+    };
+
+    collapseBtn.onclick = () => {
+      replyBox.style.display = "none";
+      controls.style.display = "none";
+      userInput.value = "";
+      userInput.focus();
+    };
+  </script>
 </body>
 </html>
