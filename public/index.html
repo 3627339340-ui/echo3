@@ -6,24 +6,24 @@
   <title>未来回音 💌</title>
   <style>
     * {
-      box-sizing: border-box;
       margin: 0;
       padding: 0;
+      box-sizing: border-box;
       font-family: "PingFang SC", "Segoe UI", sans-serif;
     }
 
     body {
+      height: 100vh;
+      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      position: relative;
-      overflow: hidden;
       transition: background 2s ease;
       background: linear-gradient(160deg, #fbe7ea, #f5c5c8);
+      position: relative;
     }
 
-    /* 背景柔光色块 */
+    /* 🌈 背景柔光层 */
     .bg-element {
       position: absolute;
       border-radius: 50%;
@@ -32,36 +32,40 @@
       animation: float 12s ease-in-out infinite alternate;
     }
 
-    .bg-element:nth-child(1) {
-      width: 250px; height: 250px;
-      top: 10%; left: 15%;
-      background: rgba(255, 160, 200, 0.6);
-    }
-    .bg-element:nth-child(2) {
-      width: 300px; height: 300px;
-      top: 60%; left: 70%;
-      background: rgba(255, 220, 180, 0.5);
-      animation-delay: 3s;
-    }
-    .bg-element:nth-child(3) {
-      width: 200px; height: 200px;
-      bottom: 5%; left: 35%;
-      background: rgba(180, 220, 255, 0.4);
-      animation-delay: 6s;
-    }
-    .bg-element:nth-child(4) {
-      width: 350px; height: 350px;
-      top: 40%; left: -10%;
-      background: rgba(240, 180, 255, 0.3);
-      animation-delay: 2s;
-    }
+    .bg-element:nth-child(1) { width: 280px; height: 280px; top: 12%; left: 20%; background: rgba(255,160,200,0.6); }
+    .bg-element:nth-child(2) { width: 300px; height: 300px; top: 60%; left: 70%; background: rgba(255,220,180,0.5); animation-delay: 3s; }
+    .bg-element:nth-child(3) { width: 220px; height: 220px; bottom: 8%; left: 40%; background: rgba(180,220,255,0.4); animation-delay: 5s; }
 
     @keyframes float {
       from { transform: translateY(0px) translateX(0px); }
       to { transform: translateY(-40px) translateX(30px); }
     }
 
-    /* 细微光晕 */
+    /* 💫 星尘层 */
+    .stars {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.6;
+      animation: twinkle 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.2; transform: scale(0.8); }
+      to { opacity: 0.8; transform: scale(1.4); }
+    }
+
+    /* 柔光层 */
     .overlay {
       position: absolute;
       inset: 0;
@@ -80,27 +84,29 @@
     h1 {
       color: white;
       font-size: 2.6rem;
-      text-align: center;
       position: absolute;
       top: 22%;
       left: 50%;
       transform: translateX(-50%);
-      letter-spacing: 2px;
       text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      letter-spacing: 2px;
+      z-index: 2;
     }
 
+    /* ✉️ 信封动画 */
     .envelope {
       position: absolute;
       width: 120px;
       height: 80px;
       background: white;
-      border-radius: 6px;
+      border-radius: 8px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.15);
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       animation: shake 3s ease-in-out infinite;
       cursor: pointer;
+      z-index: 3;
     }
 
     .envelope::before {
@@ -112,7 +118,7 @@
       left: 0;
       background: linear-gradient(180deg, white 60%, #f1f1f1);
       clip-path: polygon(0 0, 100% 0, 50% 100%);
-      border-radius: 6px 6px 0 0;
+      border-radius: 8px 8px 0 0;
     }
 
     @keyframes shake {
@@ -120,10 +126,11 @@
       50% { transform: translate(-50%, -50%) rotate(2deg); }
     }
 
+    /* 输入容器 */
     .container {
       width: 90%;
-      max-width: 480px;
-      background: rgba(255, 255, 255, 0.4);
+      max-width: 520px;
+      background: rgba(255,255,255,0.4);
       backdrop-filter: blur(10px);
       border-radius: 20px;
       padding: 24px;
@@ -136,7 +143,7 @@
 
     textarea {
       width: 100%;
-      height: 150px;
+      height: 180px;
       border: none;
       border-radius: 12px;
       padding: 12px;
@@ -163,9 +170,10 @@
       background: rgba(255,255,255,0.6);
     }
 
+    /* 信纸界面 */
     .letter {
       width: 90%;
-      max-width: 480px;
+      max-width: 520px;
       background: rgba(255,255,255,0.7);
       border-radius: 16px;
       padding: 20px;
@@ -174,6 +182,7 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.1);
       overflow-y: auto;
       max-height: 70vh;
+      z-index: 2;
     }
 
     .letter button {
@@ -183,15 +192,16 @@
   </style>
 </head>
 <body>
-  <!-- 背景柔光层 -->
-  <div class="bg-element"></div>
+  <!-- 🌌 背景光层 -->
   <div class="bg-element"></div>
   <div class="bg-element"></div>
   <div class="bg-element"></div>
   <div class="overlay"></div>
 
-  <h1>未来回音 💌</h1>
+  <!-- 💫 星光粒子 -->
+  <div class="stars" id="stars"></div>
 
+  <h1>未来回音 💌</h1>
   <div class="envelope" id="envelope"></div>
 
   <div class="container" id="inputContainer">
@@ -206,6 +216,17 @@
   </div>
 
   <script>
+    const starsContainer = document.getElementById('stars');
+    // 🌠 生成星光粒子
+    for (let i = 0; i < 50; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      s.style.top = Math.random() * 100 + '%';
+      s.style.left = Math.random() * 100 + '%';
+      s.style.animationDelay = (Math.random() * 3) + 's';
+      starsContainer.appendChild(s);
+    }
+
     const envelope = document.getElementById('envelope');
     const inputContainer = document.getElementById('inputContainer');
     const letterContainer = document.getElementById('letterContainer');
@@ -215,19 +236,17 @@
     const closeBtn = document.getElementById('closeBtn');
     let audio = null;
 
-    // 时间变换背景
     function updateBackground() {
       const hour = new Date().getHours();
       let bg = '';
       if (hour < 11) bg = 'linear-gradient(160deg, #fde0e0, #f9c8d4)';
       else if (hour < 18) bg = 'linear-gradient(160deg, #ffd6c4, #ffb6c1)';
-      else bg = 'linear-gradient(160deg, #e3b2d7, #9fa6e3)';
+      else bg = 'linear-gradient(160deg, #d6b8e0, #a3b8f0)';
       document.body.style.background = bg;
     }
     updateBackground();
 
-    // 信封动画自动进入
-    setTimeout(() => { openEnvelope(); }, 3000);
+    setTimeout(() => openEnvelope(), 3000);
     envelope.onclick = openEnvelope;
 
     function openEnvelope() {
@@ -235,7 +254,6 @@
       inputContainer.style.display = 'flex';
     }
 
-    // 生成回信
     generateBtn.onclick = async () => {
       const text = document.getElementById('message').value.trim();
       if (!text) return alert("请先写下内容哦 💭");
@@ -252,7 +270,7 @@
       const data = await res.json();
       responseP.textContent = data.reply;
 
-      // 语音生成
+      // 生成语音
       if (audio) audio.pause();
       const voiceRes = await fetch('/api/voice', {
         method: 'POST',
