@@ -13,6 +13,10 @@ const floatingLights = document.getElementById("floatingLights");
 const sun = document.getElementById("sun");
 const moon = document.getElementById("moon");
 
+// 检测移动设备
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM loaded, initializing...");
     init();
@@ -63,8 +67,10 @@ function updateCelestialBodies(hour) {
     }
 }
 
+// 移动端优化：减少星星数量
 function spawnStars(count) {
-    for (let i = 0; i < count; i++) {
+    const starCount = isMobile ? 30 : count;
+    for (let i = 0; i < starCount; i++) {
         const s = document.createElement("div");
         s.className = "star";
         s.style.left = Math.random() * 100 + "%";
@@ -82,11 +88,13 @@ function showStars() {
     });
 }
 
+// 移动端优化：减少漂浮光斑数量
 function createFloatingLights(count) {
-    for (let i = 0; i < count; i++) {
+    const lightCount = isMobile ? 2 : count;
+    for (let i = 0; i < lightCount; i++) {
         const light = document.createElement('div');
         light.className = 'floating-light';
-        light.style.width = (120 + Math.random() * 150) + 'px';
+        light.style.width = (isMobile ? 80 : 120 + Math.random() * 150) + 'px';
         light.style.height = light.style.width;
         light.style.left = Math.random() * 100 + '%';
         light.style.top = Math.random() * 100 + '%';
@@ -108,6 +116,12 @@ function openToInput() {
         
         setTimeout(() => {
             messageInput.focus();
+            // iOS Safari 输入框焦点优化
+            if (isIOS) {
+                setTimeout(() => {
+                    window.scrollTo(0, 0);
+                }, 100);
+            }
         }, 100);
     }, 800);
 }
@@ -116,7 +130,12 @@ function initEventListeners() {
     console.log("Initializing event listeners...");
     
     if (envelope) {
+        // 移动端优化：同时支持点击和触摸
         envelope.addEventListener("click", openToInput);
+        envelope.addEventListener("touchend", function(e) {
+            e.preventDefault();
+            openToInput();
+        }, { passive: false });
         console.log("Envelope click listener added");
     } else {
         console.error("Envelope element not found!");
@@ -124,12 +143,53 @@ function initEventListeners() {
     
     if (generateBtn) {
         generateBtn.addEventListener("click", generateReply);
+        generateBtn.addEventListener("touchend", function(e) {
+            e.preventDefault();
+            generateReply();
+        }, { passive: false });
         console.log("Generate button listener added");
     }
     
-    if (playBtn) playBtn.addEventListener("click", playSpeech);
-    if (pauseBtn) pauseBtn.addEventListener("click", pauseSpeech);
-    if (collapseBtn) collapseBtn.addEventListener("click", collapseLetter);
+    // 移动端优化：按钮触摸事件
+    if (playBtn) {
+        playBtn.addEventListener("click", playSpeech);
+        playBtn.addEventListener("touchend", function(e) {
+            e.preventDefault();
+            playSpeech();
+        }, { passive: false });
+    }
+    
+    if (pauseBtn) {
+        pauseBtn.addEventListener("click", pauseSpeech);
+        pauseBtn.addEventListener("touchend", function(e) {
+            e.preventDefault();
+            pauseSpeech();
+        }, { passive: false });
+    }
+    
+    if (collapseBtn) {
+        collapseBtn.addEventListener("click", collapseLetter);
+        collapseBtn.addEventListener("touchend", function(e) {
+            e.preventDefault();
+            collapseLetter();
+        }, { passive: false });
+    }
+    
+    // 移动端优化：防止页面缩放
+    document.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+    
+    let lastTouchEnd = 0;
+    document.addEventListener('touchend', function(e) {
+        const now = (new Date()).getTime();
+        if (now - lastTouchEnd <= 300) {
+            e.preventDefault();
+        }
+        lastTouchEnd = now;
+    }, false);
 }
 
 async function generateReply() {
@@ -150,6 +210,9 @@ async function generateReply() {
         const reply = await fetchReply(txt);
         letterContent.textContent = reply;
         console.log("Reply received successfully");
+        
+        // 移动端优化：滚动到顶部
+        letterContent.scrollTop = 0;
     } catch (err) {
         console.error("Error generating reply:", err);
         letterContent.textContent = "❌ 暂时无法连接到未来，请稍后重试。\n\n可能是时空信号不稳定，请检查网络连接。";
@@ -215,14 +278,23 @@ function collapseLetter() {
     messageInput.value = "";
     setTimeout(() => {
         messageInput.focus();
+        // iOS Safari 输入框焦点优化
+        if (isIOS) {
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 100);
+        }
     }, 100);
 }
 
 function init() {
     console.log("Initializing application...");
+    console.log("Mobile device:", isMobile);
+    console.log("iOS device:", isIOS);
     
-    spawnStars(60);
-    createFloatingLights(4);
+    // 移动端优化：根据设备性能调整效果
+    spawnStars(isMobile ? 30 : 60);
+    createFloatingLights(isMobile ? 2 : 4);
     updateTimeAndBackground();
     setInterval(updateTimeAndBackground, 60000);
     
@@ -251,4 +323,26 @@ if (!document.querySelector('#custom-animations')) {
         }
     `;
     document.head.appendChild(style);
+}
+
+// 移动端优化：防止双击缩放
+let lastTap = 0;
+document.addEventListener('touchend', function(e) {
+    const currentTime = new Date().getTime();
+    const tapLength = currentTime - lastTap;
+    if (tapLength < 500 && tapLength > 0) {
+        e.preventDefault();
+    }
+    lastTap = currentTime;
+}, false);
+
+// 移动端优化：处理键盘弹出
+if (isMobile) {
+    window.addEventListener('resize', function() {
+        if (document.activeElement.tagName === 'TEXTAREA' || document.activeElement.tagName === 'INPUT') {
+            window.setTimeout(function() {
+                document.activeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        }
+    });
 }
