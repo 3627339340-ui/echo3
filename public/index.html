@@ -7,12 +7,22 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>未来回音 💌</h1>
-    <form id="messageForm">
-      <input type="text" id="userInput" placeholder="写下你想说的话..." />
-      <button type="submit">发送</button>
+    <div class="decor"></div>
+    <div class="decor"></div>
+    <h1 id="title">未来回音 💌</h1>
+
+    <div class="envelope" id="envelope"></div>
+
+    <form id="messageForm" style="display: none; flex-direction: column; align-items: center;">
+      <input id="userInput" type="text" placeholder="写下你想问未来的自己..." style="padding: 10px; border-radius: 10px; width: 280px;"/>
+      <button type="submit">生成未来回信</button>
     </form>
-    <div id="replyBox">等待你的心声...</div>
+
+    <div id="replyContainer">
+      <div id="replyBox"></div>
+      <button id="closeReply">收起回信</button>
+    </div>
+
     <script src="script.js"></script>
   </body>
 </html>
