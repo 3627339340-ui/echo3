@@ -15,29 +15,26 @@
   <div class="app">
     <div class="title">未来回音</div>
 
-    <!-- 信封容器 - 初始显示 -->
     <div id="envelopeContainer" class="envelope-container">
       <div id="envelope" class="envelope" title="点击打开信封"></div>
       <div class="envelope-hint">点击信封或等待自动展开</div>
     </div>
 
-    <!-- 输入卡片 - 初始隐藏 -->
     <div id="inputCard" class="input-card hidden">
       <div class="prompt">
-        <textarea id="messageInput" placeholder="写下此刻的心声、愿望、困惑或想对未来说的话..."></textarea>
+        <textarea id="messageInput" placeholder="写下此刻的心声、愿望、困惑或想对未来说的话...&#10;&#10;未来的你将用温暖亲切的语气回应你，就像朋友间的对话一样。"></textarea>
         <div style="text-align:center;">
-          <button id="generateBtn" class="btn">寄往未来 · 生成回信</button>
+          <button id="generateBtn" class="btn">✉️ 寄给未来的自己</button>
         </div>
       </div>
     </div>
 
-    <!-- 回信卡片 - 初始隐藏 -->
     <div id="letterCard" class="letter hidden">
       <div id="letterContent" class="content">来自未来的回信将显示在这里。</div>
       <div class="controls">
-        <button id="playBtn" class="control-btn">播放语音</button>
-        <button id="pauseBtn" class="control-btn hidden">暂停播放</button>
-        <button id="collapseBtn" class="control-btn">收起回信</button>
+        <button id="playBtn" class="control-btn">🔊 聆听回信</button>
+        <button id="pauseBtn" class="control-btn hidden">⏸️ 暂停播放</button>
+        <button id="collapseBtn" class="control-btn">📨 写新的信</button>
       </div>
     </div>
   </div>
