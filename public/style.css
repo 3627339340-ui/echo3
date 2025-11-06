@@ -1,118 +1,162 @@
-body {
-  margin: 0;
-  font-family: "PingFang SC", "Segoe UI", sans-serif;
-  color: #333;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  background: linear-gradient(135deg, #f6e9e7, #d8cfcf 40%, #bfbaba);
-  transition: background 3s ease;
-  position: relative;
+:root{
+  --glass: rgba(255,255,255,0.36);
+  --glass-strong: rgba(255,255,255,0.86);
+  --muted: #6b6b6b;
 }
 
-/* 点缀元素 */
-.decor {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.3;
-  filter: blur(40px);
-  animation: float 20s infinite alternate ease-in-out;
+/* Reset & layout */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:"PingFang SC","Helvetica Neue",Arial,sans-serif;overflow:hidden}
+body{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: linear-gradient(160deg,#f8efe9,#efe5df);
+  transition: background 1.5s ease;
+  position:relative;
+  color:#222;
 }
 
-.decor:nth-child(1) {
-  width: 180px;
-  height: 180px;
-  background: rgba(255, 209, 220, 0.7);
-  top: 10%;
-  left: 20%;
+/* soft blobs (decor) */
+.blob{
+  position:absolute;border-radius:50%;filter:blur(72px);opacity:0.26;z-index:0;pointer-events:none;
+}
+.blob.b1{width:340px;height:340px;left:6%;top:8%;background:rgba(240,200,220,0.9)}
+.blob.b2{width:420px;height:420px;right:8%;bottom:6%;background:rgba(200,220,255,0.9)}
+.blob.b3{width:260px;height:260px;left:40%;bottom:10%;background:rgba(240,230,200,0.85)}
+
+/* small star particles */
+.star{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.9);opacity:0.6;z-index:0;pointer-events:none}
+
+/* container to center content and allow breathing */
+.app {
+  width:100%;
+  max-width:1024px;
+  height:88vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  z-index:2;
 }
 
-.decor:nth-child(2) {
-  width: 220px;
-  height: 220px;
-  background: rgba(200, 230, 255, 0.6);
-  bottom: 15%;
-  right: 25%;
+/* title - fixed text as requested */
+.title {
+  position:absolute;
+  top:10%;
+  left:50%;
+  transform:translateX(-50%);
+  color:#ffffff;
+  font-size:2.6rem;
+  letter-spacing:1px;
+  text-shadow:0 6px 24px rgba(0,0,0,0.28);
+  z-index:3;
 }
 
-@keyframes float {
-  from {
-    transform: translateY(0);
-  }
-  to {
-    transform: translateY(20px);
-  }
-}
-
-/* 信封动画 */
+/* envelope start */
 .envelope {
-  width: 160px;
-  height: 100px;
-  background: white;
-  position: relative;
-  border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  animation: shake 2s infinite ease-in-out;
-  cursor: pointer;
+  width:220px;height:140px;border-radius:14px;background:linear-gradient(180deg,#ffffff,#f6f4f4);box-shadow:0 20px 60px rgba(11,18,40,0.12);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:3;position:relative;animation:shake 3s ease-in-out infinite;
+  border:1px solid rgba(0,0,0,0.04);
+}
+.envelope::before{content:"";position:absolute;top:0;left:0;width:100%;height:56%;clip-path:polygon(0 0,100% 0,50% 100%);background:linear-gradient(180deg,#fff,#f1efef);border-radius:14px 14px 0 0}
+
+@keyframes shake{0%{transform:translateY(0) rotate(0deg)}25%{transform:translateY(-2px) rotate(1deg)}50%{transform:translateY(0) rotate(-1deg)}75%{transform:translateY(-1px) rotate(0.5deg)}100%{transform:translateY(0) rotate(0deg)}}
+
+/* input card (glass) */
+.input-card{
+  display:none;
+  width:76%;
+  max-width:760px;
+  background:var(--glass);
+  border-radius:18px;
+  padding:28px;
+  box-shadow:0 18px 50px rgba(8,14,30,0.08);
+  backdrop-filter:blur(10px);
+  z-index:3;
+  flex-direction:column;
+  align-items:center;
 }
 
-.envelope::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  border-left: 80px solid transparent;
-  border-right: 80px solid transparent;
-  border-bottom: 50px solid #f3f3f3;
-  border-top-left-radius: 4px;
-  border-top-right-radius: 4px;
+.input-card .prompt{
+  width:100%;
+  max-width:640px;
 }
 
-@keyframes shake {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(2deg); }
-  50% { transform: rotate(-2deg); }
-  75% { transform: rotate(1deg); }
+textarea{
+  width:100%;
+  min-height:200px;
+  border-radius:12px;
+  border:none;
+  padding:16px;
+  font-size:16px;
+  resize:vertical;
+  outline:none;
+  background:rgba(255,255,255,0.92);
+  box-shadow:inset 0 2px 8px rgba(16,24,40,0.04);
 }
 
-#title {
-  color: white;
-  font-size: 2.6em;
-  font-weight: 600;
-  position: absolute;
-  top: 20%;
-  text-align: center;
+/* primary button - frosted white */
+.btn {
+  margin-top:18px;
+  padding:12px 28px;
+  border-radius:14px;
+  border:none;
+  background:rgba(255,255,255,0.6);
+  backdrop-filter:blur(8px);
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 6px 18px rgba(11,18,40,0.08);
 }
 
-#replyContainer {
-  display: none;
-  background: rgba(255, 255, 255, 0.85);
-  border-radius: 12px;
-  padding: 20px;
-  width: 80%;
-  max-width: 600px;
-  height: 400px;
-  overflow-y: auto;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-  backdrop-filter: blur(10px);
+/* letter card (the reply) */
+.letter {
+  display:none;
+  width:74%;
+  max-width:720px;
+  background:var(--glass-strong);
+  border-radius:18px;
+  padding:26px;
+  box-shadow:0 22px 60px rgba(11,18,40,0.09);
+  z-index:3;
+  max-height:66vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
 }
 
-button {
-  margin-top: 20px;
-  background: rgba(255, 255, 255, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 10px;
-  padding: 8px 18px;
-  cursor: pointer;
-  color: #333;
-  font-weight: 500;
-  backdrop-filter: blur(8px);
-  transition: 0.3s;
+.letter .content {
+  flex:1;
+  overflow:auto;
+  padding-right:8px;
+  color:#222;
+  line-height:1.8;
+  font-size:16px;
+  background:transparent;
 }
 
-button:hover {
-  background: rgba(255, 255, 255, 0.7);
+/* controls inside letter */
+.controls {
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  margin-top:14px;
+}
+
+.control-btn {
+  padding:10px 18px;
+  border-radius:12px;
+  border:none;
+  background:rgba(255,255,255,0.8);
+  cursor:pointer;
+  font-weight:600;
+}
+
+/* small helper */
+.hidden{display:none}
+
+/* responsive tweaks */
+@media (max-width:720px){
+  .title{font-size:1.8rem;top:6%}
+  .input-card, .letter { width:92% }
+  .envelope{width:160px;height:100px}
 }
