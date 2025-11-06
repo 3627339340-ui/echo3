@@ -155,7 +155,6 @@ body {
   50% { opacity: 1; }
 }
 
-/* 修复：确保输入卡片正确显示 */
 .input-card {
   width: 80%;
   max-width: 800px;
@@ -185,6 +184,8 @@ textarea {
   resize: vertical;
   outline: none;
   background: rgba(255, 255, 255, 0.9);
+  font-family: inherit;
+  line-height: 1.6;
 }
 
 .btn {
@@ -196,6 +197,12 @@ textarea {
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-2px);
 }
 
 .letter {
@@ -220,6 +227,7 @@ textarea {
   line-height: 1.8;
   font-size: 16px;
   white-space: pre-wrap;
+  font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
 }
 
 .controls {
@@ -236,9 +244,13 @@ textarea {
   background: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   font-weight: 600;
+  transition: all 0.3s ease;
 }
 
-/* 修复：确保hidden类正确工作 */
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+}
+
 .hidden {
   display: none !important;
 }
