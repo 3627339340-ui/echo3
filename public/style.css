@@ -6,7 +6,6 @@
   --shadow-strong: 0 25px 80px rgba(11, 18, 40, 0.2);
 }
 
-/* Reset & layout */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -26,11 +25,10 @@ body {
   transition: background 1.5s ease;
   position: relative;
   color: #2c3e50;
-  /* 默认背景，会根据时间更新 */
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-/* 太阳月亮特效 - 更加柔和 */
+/* 太阳月亮特效 */
 .celestial-body {
   position: absolute;
   border-radius: 50%;
@@ -66,6 +64,19 @@ body {
   pointer-events: none;
 }
 
+/* 星星 */
+.star {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+  transition: opacity 2s ease;
+}
+
 /* 主容器 */
 .app {
   width: 100%;
@@ -78,7 +89,7 @@ body {
   z-index: 10;
 }
 
-/* 标题 - 固定文字 */
+/* 标题 */
 .title {
   position: absolute;
   top: 8%;
@@ -97,7 +108,7 @@ body {
   border: 1px solid var(--glass-border);
 }
 
-/* 信封动画 */
+/* 信封容器 */
 .envelope-container {
   position: absolute;
   top: 50%;
@@ -211,7 +222,7 @@ textarea:focus {
   box-shadow: inset 0 2px 16px rgba(16, 24, 40, 0.08), 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
 
-/* 主按钮 */
+/* 按钮 */
 .btn {
   margin-top: 24px;
   padding: 14px 36px;
@@ -234,7 +245,7 @@ textarea:focus {
   background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.9));
 }
 
-/* 回信卡片 - 增大尺寸 */
+/* 回信卡片 */
 .letter {
   display: none;
   width: 85%;
@@ -246,7 +257,6 @@ textarea:focus {
   box-shadow: var(--shadow-strong);
   z-index: 10;
   overflow: hidden;
-  display: flex;
   flex-direction: column;
   border: 1px solid rgba(255, 255, 255, 0.4);
   backdrop-filter: blur(20px);
@@ -263,6 +273,7 @@ textarea:focus {
   border-radius: 12px;
   margin-bottom: 20px;
   font-family: "Noto Serif SC", serif;
+  white-space: pre-wrap;
 }
 
 .letter .content::-webkit-scrollbar {
