@@ -13,7 +13,6 @@ const floatingLights = document.getElementById("floatingLights");
 const sun = document.getElementById("sun");
 const moon = document.getElementById("moon");
 
-// 修复：确保DOM完全加载后再执行
 document.addEventListener('DOMContentLoaded', function() {
     console.log("DOM loaded, initializing...");
     init();
@@ -95,11 +94,9 @@ function createFloatingLights(count) {
     }
 }
 
-// 修复：改进信封打开函数
 function openToInput() {
     console.log("Opening envelope...");
     
-    // 添加淡出动画
     envelopeContainer.style.opacity = '0';
     envelopeContainer.style.transition = 'opacity 0.8s ease';
     
@@ -109,18 +106,15 @@ function openToInput() {
         inputCard.classList.add("fade-in");
         console.log("Input card should be visible now");
         
-        // 确保输入框获得焦点
         setTimeout(() => {
             messageInput.focus();
         }, 100);
     }, 800);
 }
 
-// 修复：确保事件监听器正确绑定
 function initEventListeners() {
     console.log("Initializing event listeners...");
     
-    // 信封点击事件
     if (envelope) {
         envelope.addEventListener("click", openToInput);
         console.log("Envelope click listener added");
@@ -128,13 +122,11 @@ function initEventListeners() {
         console.error("Envelope element not found!");
     }
     
-    // 生成按钮事件
     if (generateBtn) {
         generateBtn.addEventListener("click", generateReply);
         console.log("Generate button listener added");
     }
     
-    // 语音控制事件
     if (playBtn) playBtn.addEventListener("click", playSpeech);
     if (pauseBtn) pauseBtn.addEventListener("click", pauseSpeech);
     if (collapseBtn) collapseBtn.addEventListener("click", collapseLetter);
@@ -143,7 +135,7 @@ function initEventListeners() {
 async function generateReply() {
     const txt = messageInput.value.trim();
     if (!txt) {
-        alert("请先写下您的心声，再寄往未来。");
+        alert("请先写下您的心声，未来的自己才能回应您。");
         return;
     }
 
@@ -152,7 +144,7 @@ async function generateReply() {
     inputCard.classList.add("hidden");
     letterCard.classList.remove("hidden");
     letterCard.classList.add("fade-in");
-    letterContent.textContent = "正在连接未来，请稍候片刻...";
+    letterContent.textContent = "🕒 正在连接未来...\n\n未来的自己正在阅读您的信件，请稍候片刻。";
 
     try {
         const reply = await fetchReply(txt);
@@ -160,7 +152,7 @@ async function generateReply() {
         console.log("Reply received successfully");
     } catch (err) {
         console.error("Error generating reply:", err);
-        letterContent.textContent = "暂时无法连接到未来，请稍后重试。错误: " + err.message;
+        letterContent.textContent = "❌ 暂时无法连接到未来，请稍后重试。\n\n可能是时空信号不稳定，请检查网络连接。";
     }
 }
 
@@ -197,6 +189,8 @@ function playSpeech() {
     utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "zh-CN";
     utterance.rate = 0.9;
+    utterance.pitch = 1.1;
+    utterance.volume = 0.8;
     speechSynthesis.speak(utterance);
     playBtn.classList.add("hidden");
     pauseBtn.classList.remove("hidden");
@@ -227,7 +221,6 @@ function collapseLetter() {
 function init() {
     console.log("Initializing application...");
     
-    // 初始化视觉效果
     spawnStars(60);
     createFloatingLights(4);
     updateTimeAndBackground();
@@ -238,16 +231,13 @@ function init() {
         showStars();
     }
     
-    // 初始化事件监听器
     initEventListeners();
     
-    // 3秒后自动打开信封
     setTimeout(openToInput, 3000);
     
     console.log("Application initialized successfully");
 }
 
-// 添加必要的CSS动画
 if (!document.querySelector('#custom-animations')) {
     const style = document.createElement('style');
     style.id = 'custom-animations';
