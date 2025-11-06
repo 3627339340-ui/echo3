@@ -1,93 +1,457 @@
-/* 在现有的CSS基础上添加以下样式 */
-
-/* 安卓浏览器按钮优化 */
-.control-btn {
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    -webkit-tap-highlight-color: rgba(0,0,0,0.1);
-    position: relative;
-    overflow: hidden;
+:root {
+  --glass: rgba(255, 255, 255, 0.25);
+  --glass-strong: rgba(255, 255, 255, 0.92);
+  --shadow: 0 20px 60px rgba(11, 18, 40, 0.15);
+  --mobile-padding: 16px;
 }
 
-/* 确保所有按钮在安卓浏览器中都有良好的触摸反馈 */
-button, .btn, .control-btn {
-    cursor: pointer;
-    touch-action: manipulation;
-    min-height: 44px; /* 确保触摸目标足够大 */
-    min-width: 44px;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* 安卓浏览器中按钮的激活状态 */
-.control-btn:active {
-    background: rgba(255, 255, 255, 0.9) !important;
-    transform: scale(0.98);
-    transition: all 0.1s ease;
+html, body {
+  height: 100%;
+  font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  overflow: hidden;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* 特别为安卓浏览器优化控制按钮容器 */
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 1.5s ease;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* 移动端优化：减少天体尺寸 */
+.celestial-body {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 1;
+  pointer-events: none;
+  transition: all 1.5s ease;
+}
+
+#sun {
+  background: radial-gradient(circle at 30% 30%, rgba(255, 235, 59, 0.9), rgba(255, 152, 0, 0.7));
+  width: 80px;
+  height: 80px;
+  box-shadow: 0 0 60px rgba(255, 235, 59, 0.4);
+  opacity: 0;
+}
+
+#moon {
+  background: radial-gradient(circle at 30% 30%, rgba(245, 245, 245, 0.9), rgba(224, 224, 224, 0.7));
+  width: 60px;
+  height: 60px;
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.3);
+  opacity: 0;
+}
+
+/* 移动端优化：减少漂浮光斑数量 */
+.floating-light {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+  filter: blur(20px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  opacity: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.app {
+  width: 100%;
+  max-width: 1200px;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 10;
+  padding: var(--mobile-padding);
+}
+
+/* 移动端优化：标题字体大小 */
+.title {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 2.5rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+  text-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+  text-align: center;
+  width: 100%;
+  padding: 0 20px;
+}
+
+.envelope-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  transition: opacity 0.8s ease;
+  width: 100%;
+  max-width: 300px;
+}
+
+/* 移动端优化：信封尺寸 */
+.envelope {
+  width: 200px;
+  height: 130px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #ffffff, #f8f9fa);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  animation: floatEnvelope 3s ease-in-out infinite;
+  touch-action: manipulation;
+}
+
+.envelope::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60%;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background: linear-gradient(135deg, #ffffff, #f1f3f4);
+  border-radius: 12px 12px 0 0;
+}
+
+.envelope::after {
+  content: "💌";
+  font-size: 2.5rem;
+}
+
+.envelope-hint {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  text-align: center;
+  animation: pulse 2s ease-in-out infinite;
+  padding: 0 20px;
+}
+
+@keyframes floatEnvelope {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-6px) rotate(1deg); }
+  50% { transform: translateY(-3px) rotate(-1deg); }
+  75% { transform: translateY(-4px) rotate(0.5deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+/* 移动端优化：输入卡片 */
+.input-card {
+  width: 100%;
+  max-width: 800px;
+  background: var(--glass);
+  border-radius: 20px;
+  padding: 30px 25px;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(20px);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.input-card .prompt {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* 移动端优化：文本输入框 */
+textarea {
+  width: 100%;
+  min-height: 180px;
+  border-radius: 14px;
+  border: none;
+  padding: 20px;
+  font-size: 16px;
+  resize: vertical;
+  outline: none;
+  background: rgba(255, 255, 255, 0.9);
+  font-family: inherit;
+  line-height: 1.6;
+  -webkit-appearance: none;
+  touch-action: manipulation;
+}
+
+/* 移动端优化：按钮尺寸 */
+.btn {
+  margin-top: 20px;
+  padding: 16px 32px;
+  border-radius: 14px;
+  border: none;
+  background: rgba(255, 255, 255, 0.8);
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 54px;
+  min-width: 200px;
+  touch-action: manipulation;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+  transform: translateY(-2px);
+}
+
+/* 移动端优化：回信卡片 */
+.letter {
+  width: 100%;
+  max-width: 900px;
+  height: 80vh;
+  background: var(--glass-strong);
+  border-radius: 20px;
+  padding: 30px 25px;
+  box-shadow: var(--shadow);
+  z-index: 10;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin: 0 auto;
+}
+
+.letter .content {
+  flex: 1;
+  overflow: auto;
+  padding: 15px;
+  color: #2c3e50;
+  line-height: 1.7;
+  font-size: 15px;
+  white-space: pre-wrap;
+  font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* 移动端优化：控制按钮 */
 .controls {
-    display: flex;
-    gap: 12px;
-    justify-content: center;
-    margin-top: 20px;
-    flex-wrap: wrap;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.control-btn {
+  padding: 14px 20px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  min-height: 48px;
+  min-width: 120px;
+  font-size: 14px;
+  touch-action: manipulation;
+  flex: 1;
+  max-width: 140px;
+}
+
+.control-btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.fade-in {
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { 
+    opacity: 0; 
+    transform: translateY(20px); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0); 
+  }
+}
+
+/* 移动端横屏优化 */
+@media (max-height: 500px) and (orientation: landscape) {
+  .app {
+    height: auto;
+    min-height: 100vh;
+    padding: 10px;
+  }
+  
+  .title {
     position: relative;
-    z-index: 100; /* 确保按钮在最上层 */
+    top: auto;
+    transform: none;
+    margin-bottom: 20px;
+    font-size: 2rem;
+  }
+  
+  .envelope-container {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    margin: 20px 0;
+  }
+  
+  .input-card, .letter {
+    height: auto;
+    max-height: 80vh;
+  }
 }
 
-/* 安卓横屏模式优化 */
-@media (max-width: 768px) and (orientation: landscape) {
-    .controls {
-        position: sticky;
-        bottom: 10px;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        padding: 10px;
-        border-radius: 12px;
-        margin-top: 10px;
-    }
+/* 小屏幕手机优化 */
+@media (max-width: 360px) {
+  .title {
+    font-size: 2rem;
+    top: 3%;
+  }
+  
+  .envelope {
+    width: 160px;
+    height: 110px;
+  }
+  
+  .envelope::after {
+    font-size: 2rem;
+  }
+  
+  .input-card, .letter {
+    padding: 20px 15px;
+    border-radius: 16px;
+  }
+  
+  textarea {
+    min-height: 150px;
+    padding: 15px;
+    font-size: 15px;
+  }
+  
+  .btn {
+    padding: 14px 24px;
+    min-height: 50px;
+    font-size: 15px;
+  }
+  
+  .control-btn {
+    padding: 12px 16px;
+    min-height: 44px;
+    font-size: 13px;
+    min-width: 100px;
+  }
 }
 
-/* 特别为百度等内置浏览器优化 */
+/* 中等屏幕平板 */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .title {
+    font-size: 3rem;
+    top: 8%;
+  }
+  
+  .envelope {
+    width: 220px;
+    height: 150px;
+  }
+  
+  .input-card, .letter {
+    padding: 35px 30px;
+  }
+  
+  textarea {
+    min-height: 200px;
+  }
+}
+
+/* 大屏幕桌面 */
+@media (min-width: 1025px) {
+  .title {
+    font-size: 3.2rem;
+    top: 8%;
+  }
+  
+  .envelope {
+    width: 240px;
+    height: 160px;
+  }
+  
+  .envelope::after {
+    font-size: 3rem;
+  }
+  
+  .input-card, .letter {
+    padding: 40px;
+  }
+  
+  textarea {
+    min-height: 240px;
+  }
+}
+
+/* 防止移动端缩放 */
 @media (max-width: 768px) {
-    .control-btn {
-        font-size: 15px;
-        padding: 14px 18px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    /* 确保按钮不会被其他元素遮挡 */
-    .letter {
-        position: relative;
-        z-index: 10;
-    }
-    
-    .controls {
-        position: relative;
-        z-index: 20;
-    }
+  input, textarea, select {
+    font-size: 16px !important; /* 防止iOS缩放 */
+  }
 }
 
-/* 高对比度模式，提高按钮可见性 */
-@media (prefers-contrast: high) {
-    .control-btn {
-        border: 2px solid #000;
-        background: rgba(255, 255, 255, 0.95);
-        color: #000;
-    }
+/* 高DPI屏幕优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .star {
+    width: 3px;
+    height: 3px;
+  }
 }
 
-/* 减少动画以提高性能 */
-@media (prefers-reduced-motion: reduce) {
-    .fade-in {
-        animation: none;
-        opacity: 1;
-    }
-    
-    .envelope {
-        animation: none;
-    }
+/* 暗色模式支持 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --glass: rgba(255, 255, 255, 0.15);
+    --glass-strong: rgba(255, 255, 255, 0.1);
+  }
+  
+  textarea {
+    background: rgba(255, 255, 255, 0.85);
+    color: #333;
+  }
+  
+  .letter .content {
+    color: #f0f0f0;
+  }
 }
