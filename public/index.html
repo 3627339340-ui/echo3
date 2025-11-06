@@ -5,111 +5,152 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>未来回音 💌</title>
   <style>
-    body {
+    * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: "PingFang SC", "Segoe UI", sans-serif;
+    }
+
+    body {
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: linear-gradient(180deg, #ffe6eb 0%, #fff4f7 50%, #ffe6eb 100%);
-      transition: background 1s ease;
+      background: radial-gradient(circle at center, #f5f2ef 40%, #d9d4cf 100%);
+      font-family: "PingFang SC", "Helvetica Neue", sans-serif;
       overflow: hidden;
+      transition: background 1.2s ease;
     }
 
-    .container {
+    /* ---------- 信封动画 ---------- */
+    .envelope {
+      width: 180px;
+      height: 120px;
+      background: #fff;
+      border: 2px solid rgba(255,255,255,0.8);
+      border-radius: 6px;
+      position: relative;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      animation: shake 3s ease-in-out infinite;
+      cursor: pointer;
+    }
+
+    .envelope::before, .envelope::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 6px;
+      top: 0; left: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(245,245,245,0.8));
+    }
+
+    .envelope::before {
+      clip-path: polygon(0 0, 50% 55%, 100% 0);
+      border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(2deg); }
+      50% { transform: rotate(-2deg); }
+      75% { transform: rotate(1deg); }
+    }
+
+    /* ---------- 输入页 ---------- */
+    .main {
+      display: none;
+      flex-direction: column;
+      align-items: center;
       text-align: center;
-      animation: fadeIn 2s ease;
+      animation: fadeIn 1.5s ease forwards;
     }
 
     h1 {
+      color: white;
       font-size: 2.2em;
-      color: #d46a7e;
-      letter-spacing: 3px;
-      margin-bottom: 25px;
-      animation: floatTitle 3s ease-in-out infinite;
+      letter-spacing: 4px;
+      margin-bottom: 30px;
+      text-shadow: 0 0 10px rgba(255,255,255,0.6);
     }
 
-    @keyframes floatTitle {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-4px); }
-    }
-
-    .letter {
-      background: rgba(255, 255, 255, 0.85);
-      box-shadow: 0 8px 20px rgba(255, 182, 193, 0.3);
+    .input-box {
+      background: rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(8px);
       border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
       padding: 25px;
       width: 90%;
-      max-width: 480px;
-      margin: 0 auto 20px;
-      backdrop-filter: blur(6px);
-      transition: all 0.6s ease;
+      max-width: 450px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     textarea {
       width: 100%;
-      height: 160px;
+      height: 150px;
       border: none;
       border-radius: 15px;
       padding: 15px;
       resize: none;
+      background: rgba(255,255,255,0.9);
       font-size: 16px;
-      background: rgba(255, 255, 255, 0.9);
-      box-shadow: inset 0 0 10px rgba(255, 182, 193, 0.2);
       outline: none;
-      transition: box-shadow 0.3s;
-    }
-
-    textarea:focus {
-      box-shadow: 0 0 10px rgba(255, 128, 160, 0.5);
+      margin-bottom: 15px;
     }
 
     button {
-      background-color: #f9a8b8;
-      color: white;
+      background: rgba(255,255,255,0.35);
       border: none;
-      padding: 12px 28px;
+      backdrop-filter: blur(10px);
+      color: #333;
       border-radius: 25px;
+      padding: 12px 28px;
       font-size: 16px;
-      cursor: pointer;
       transition: all 0.3s ease;
-      margin-top: 10px;
+      cursor: pointer;
     }
 
     button:hover {
-      background-color: #f47c96;
-      transform: scale(1.05);
+      background: rgba(255,255,255,0.55);
     }
 
-    .reply-box {
-      margin-top: 25px;
-      white-space: pre-wrap;
-      text-align: left;
-      background: rgba(255, 255, 255, 0.9);
+    /* ---------- 回信页 ---------- */
+    .reply-page {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 1.2s ease;
+    }
+
+    .letter {
+      background: rgba(255,255,255,0.9);
       border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 8px 15px rgba(255, 150, 170, 0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 500px;
+      padding: 25px;
+      text-align: left;
+      line-height: 1.8;
       font-size: 15px;
       color: #333;
-      line-height: 1.8;
-      max-width: 480px;
-      margin-left: auto;
-      margin-right: auto;
+      margin-bottom: 20px;
+      overflow-y: auto;
+      max-height: 300px;
     }
 
-    .controls {
-      margin-top: 10px;
+    .reply-controls {
       display: flex;
+      gap: 12px;
       justify-content: center;
-      gap: 10px;
     }
 
-    .controls button {
-      padding: 8px 18px;
-      font-size: 14px;
+    .reply-controls button {
+      background: rgba(255,255,255,0.3);
+      color: #333;
       border-radius: 20px;
+      padding: 10px 20px;
     }
 
     @keyframes fadeIn {
@@ -119,17 +160,22 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>未来回音 💌</h1>
+  <!-- 开场信封 -->
+  <div class="envelope" id="envelope"></div>
 
-    <div class="letter">
-      <textarea id="userInput" placeholder="给未来的自己写下想说的话..."></textarea>
-      <br />
+  <!-- 主输入界面 -->
+  <div class="main" id="main">
+    <h1>未来回音 💌</h1>
+    <div class="input-box">
+      <textarea id="userInput" placeholder="写下你想对未来的自己说的话..."></textarea>
       <button id="generateBtn">生成未来回信</button>
     </div>
+  </div>
 
-    <div id="replyBox" class="reply-box" style="display:none;"></div>
-    <div class="controls" id="controls" style="display:none;">
+  <!-- 回信界面 -->
+  <div class="reply-page" id="replyPage">
+    <div class="letter" id="replyContent"></div>
+    <div class="reply-controls">
       <button id="playAudio">🔊 播放语音</button>
       <button id="stopAudio" style="display:none;">⏹ 停止播放</button>
       <button id="collapseBtn">📩 收起回信</button>
@@ -137,64 +183,74 @@
   </div>
 
   <script>
-    const generateBtn = document.getElementById("generateBtn");
-    const userInput = document.getElementById("userInput");
-    const replyBox = document.getElementById("replyBox");
-    const controls = document.getElementById("controls");
-    const playAudioBtn = document.getElementById("playAudio");
-    const stopAudioBtn = document.getElementById("stopAudio");
-    const collapseBtn = document.getElementById("collapseBtn");
+    const envelope = document.getElementById('envelope');
+    const main = document.getElementById('main');
+    const replyPage = document.getElementById('replyPage');
+    const generateBtn = document.getElementById('generateBtn');
+    const userInput = document.getElementById('userInput');
+    const replyContent = document.getElementById('replyContent');
+    const playAudioBtn = document.getElementById('playAudio');
+    const stopAudioBtn = document.getElementById('stopAudio');
+    const collapseBtn = document.getElementById('collapseBtn');
     let audio;
 
+    // 信封点击或自动展开
+    const showMain = () => {
+      envelope.style.display = 'none';
+      main.style.display = 'flex';
+    };
+    envelope.onclick = showMain;
+    setTimeout(showMain, 3000);
+
+    // 生成未来回信
     generateBtn.onclick = async () => {
       const text = userInput.value.trim();
-      if (!text) return alert("请先写点给未来的话 💬");
+      if (!text) return alert('请写点什么吧 💭');
+      main.style.display = 'none';
+      replyPage.style.display = 'flex';
 
-      replyBox.style.display = "none";
-      controls.style.display = "none";
-      generateBtn.textContent = "正在生成中...";
-      generateBtn.disabled = true;
+      // 模拟 AI 回信内容（后端 /api/generate 可接智谱）
+      const replyText = `亲爱的现在的我：
 
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: text })
-      });
-      const data = await res.json();
+你好呀。我是来自未来的你。  
+回头看，你经历的那些不确定与不安，其实都成了你最温柔的底色。  
+未来的我们学会了慢下来，也学会了不去取悦世界，而去拥抱自己。  
+你现在的坚持，会成为未来我最珍惜的勇气。  
+请继续带着微笑前行，好吗？
 
-      replyBox.textContent = data.reply || "未来的你暂时沉默...";
-      replyBox.style.display = "block";
-      controls.style.display = "flex";
-      generateBtn.textContent = "生成未来回信";
-      generateBtn.disabled = false;
+—— 来自未来的你 🌷`;
+
+      replyContent.textContent = replyText;
     };
 
-    playAudioBtn.onclick = async () => {
-      const text = replyBox.textContent;
-      playAudioBtn.style.display = "none";
-      stopAudioBtn.style.display = "inline-block";
-
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "zh-CN";
-      utterance.onend = () => {
-        playAudioBtn.style.display = "inline-block";
-        stopAudioBtn.style.display = "none";
+    // 播放语音
+    playAudioBtn.onclick = () => {
+      const text = replyContent.textContent;
+      playAudioBtn.style.display = 'none';
+      stopAudioBtn.style.display = 'inline-block';
+      const utter = new SpeechSynthesisUtterance(text);
+      utter.lang = 'zh-CN';
+      utter.rate = 1;
+      utter.onend = () => {
+        playAudioBtn.style.display = 'inline-block';
+        stopAudioBtn.style.display = 'none';
       };
-      audio = utterance;
-      speechSynthesis.speak(utterance);
+      speechSynthesis.speak(utter);
+      audio = utter;
     };
 
+    // 停止语音
     stopAudioBtn.onclick = () => {
       speechSynthesis.cancel();
-      playAudioBtn.style.display = "inline-block";
-      stopAudioBtn.style.display = "none";
+      playAudioBtn.style.display = 'inline-block';
+      stopAudioBtn.style.display = 'none';
     };
 
+    // 收起回信
     collapseBtn.onclick = () => {
-      replyBox.style.display = "none";
-      controls.style.display = "none";
-      userInput.value = "";
-      userInput.focus();
+      replyPage.style.display = 'none';
+      main.style.display = 'flex';
+      userInput.value = '';
     };
   </script>
 </body>
