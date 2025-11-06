@@ -1,134 +1,189 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>未来回音 💌</title>
 <style>
 html,body {
-  margin: 0;
-  height: 100%;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  font-family: "PingFang SC","SF Pro Display",sans-serif;
-  transition: background 2s ease;
+  margin:0;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  overflow:hidden;
+  font-family:"PingFang SC","SF Pro Display",sans-serif;
+  background: radial-gradient(circle at 50% 40%, #ffdce6 35%, #f9a3b2 70%, #b96a79 100%);
+  animation: gradientShift 10s ease-in-out infinite alternate;
+  transition: background 2s ease-in-out;
+}
+@keyframes gradientShift {
+  0% { background: radial-gradient(circle at 50% 45%, #ffdce6 40%, #f8a8b8 70%, #b96a79 100%); }
+  100% { background: radial-gradient(circle at 45% 40%, #ffe3e9 30%, #f7b6c5 65%, #9d5f6e 100%); }
 }
 
-/* 动态背景色 */
-body.morning {
-  background: radial-gradient(circle at 50% 40%, #ffe6d0 30%, #ffb9a3 70%, #c96f5d 100%);
-}
-body.afternoon {
-  background: radial-gradient(circle at 50% 40%, #ffd6e2 30%, #e4a2e1 70%, #8e5ea7 100%);
-}
-body.night {
-  background: radial-gradient(circle at 50% 40%, #b9a4f0 25%, #6c56a2 70%, #2e1f54 100%);
-}
-
-/* 信封 */
+/* 信封容器 */
 .envelope-container {
-  width: 260px;
-  height: 170px;
-  cursor: pointer;
-  position: relative;
-  animation: gentleShake 2.5s ease-in-out infinite alternate;
+  width:270px;
+  height:180px;
+  position:relative;
+  cursor:pointer;
+  perspective:800px;
+  animation: gentleShake 3s ease-in-out infinite alternate;
 }
 @keyframes gentleShake {
   0%,100% { transform: rotate(0deg); }
-  50% { transform: rotate(1.8deg); }
-}
-.envelope-body {
-  width: 100%;
-  height: 100%;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-  position: relative;
-}
-.envelope-flap {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 90px;
-  background: linear-gradient(to bottom, #fff 0%, #f4f4f4 100%);
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-  box-shadow: inset 0 -1px 4px rgba(0,0,0,0.05);
+  50% { transform: rotate(1.3deg); }
 }
 
-/* 主界面 */
-h1 {
-  color: #fff;
-  font-size: 2.6rem;
-  margin: 5vh 0 2vh 0;
-  text-shadow: 0 4px 25px rgba(0,0,0,0.35);
-  letter-spacing: 2px;
-  text-align: center;
+/* 信封主体 */
+.envelope-body {
+  width:100%;
+  height:100%;
+  background: linear-gradient(180deg, #fff 0%, #f9f9f9 100%);
+  border-radius:14px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  position:relative;
+  overflow:hidden;
 }
+
+/* 信封上盖 */
+.envelope-flap {
+  position:absolute;
+  top:0;
+  left:0;
+  width:100%;
+  height:95px;
+  background: linear-gradient(to bottom, #fff 0%, #f4f4f4 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top;
+  transition: transform 0.9s ease;
+  box-shadow: inset 0 -2px 6px rgba(0,0,0,0.06);
+}
+.envelope-container.open .envelope-flap {
+  transform: rotateX(160deg);
+}
+
+/* 柔光闪烁 */
+.glow {
+  position:absolute;
+  inset:0;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
+  opacity:0;
+  border-radius:14px;
+  pointer-events:none;
+  animation: glowPulse 1.6s ease-out;
+}
+@keyframes glowPulse {
+  0% { opacity:0.7; transform:scale(0.8); }
+  100% { opacity:0; transform:scale(1.5); }
+}
+
+/* 标题 */
+h1 {
+  color:#fff;
+  font-size:2.6rem;
+  text-align:center;
+  text-shadow:0 4px 25px rgba(0,0,0,0.35);
+  margin:5vh 0 2vh;
+  letter-spacing:2px;
+}
+
+/* 面板 */
 .panel {
-  background: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.35);
   backdrop-filter: blur(15px);
-  border-radius: 20px;
-  padding: 20px;
-  width: 90%;
-  max-width: 700px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  border-radius:22px;
+  padding:22px;
+  width:90%;
+  max-width:700px;
+  box-shadow:0 8px 25px rgba(0,0,0,0.12);
 }
 textarea {
-  width: 100%;
-  min-height: 140px;
-  padding: 15px;
-  border: none;
-  border-radius: 12px;
-  resize: vertical;
-  background: rgba(255,255,255,0.8);
-  font-size: 16px;
-  outline: none;
+  width:100%;
+  min-height:140px;
+  padding:15px;
+  border:none;
+  border-radius:12px;
+  resize:vertical;
+  background: rgba(255,255,255,0.85);
+  font-size:16px;
+  outline:none;
 }
+
+/* 按钮流光效果 */
 button {
-  border: none;
-  border-radius: 18px;
-  padding: 10px 22px;
-  margin-top: 12px;
-  color: #fff;
-  font-weight: 600;
+  border:none;
+  border-radius:18px;
+  padding:10px 24px;
+  margin-top:14px;
+  color:#fff;
+  font-weight:600;
   background: rgba(255,255,255,0.25);
   backdrop-filter: blur(10px);
-  cursor: pointer;
-  transition: all 0.25s ease;
+  cursor:pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 button:hover {
-  background: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.45);
 }
+button::before {
+  content: "";
+  position: absolute;
+  top:0; left:-50%;
+  width:50%;
+  height:100%;
+  background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 100%);
+  transform: skewX(-20deg);
+  transition: all 0.5s;
+}
+button.glow-run::before {
+  left:120%;
+  transition: all 1.2s;
+}
+
+/* 回信信纸 */
 #letter {
-  display: none;
-  margin-top: 20px;
-  background: rgba(255,255,255,0.95);
-  border-radius: 18px;
-  padding: 22px;
-  width: 90%;
-  max-width: 700px;
-  max-height: 400px;
-  overflow-y: auto;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  display:none;
+  margin-top:20px;
+  background: rgba(255,255,255,0.96);
+  border-radius:18px;
+  padding:22px;
+  width:90%;
+  max-width:700px;
+  max-height:400px;
+  overflow-y:auto;
+  box-shadow:0 8px 25px rgba(0,0,0,0.12);
+  animation: fadeIn 1s ease forwards;
 }
-#letter pre {
-  white-space: pre-wrap;
-  font-size: 16px;
-  line-height: 1.8;
+#letter.playing {
+  animation: glowBreath 2s infinite alternate;
+}
+@keyframes glowBreath {
+  0% { box-shadow: 0 0 20px rgba(255,200,220,0.4); }
+  100% { box-shadow: 0 0 35px rgba(255,180,220,0.7); }
+}
+@keyframes fadeIn {
+  from { opacity:0; transform: translateY(10px); }
+  to { opacity:1; transform: translateY(0); }
+}
+pre {
+  white-space:pre-wrap;
+  font-size:16px;
+  line-height:1.8;
 }
 </style>
 </head>
 <body>
 
 <div class="envelope-container" id="envelope">
-  <div class="envelope-body"></div>
-  <div class="envelope-flap"></div>
+  <div class="envelope-body">
+    <div class="envelope-flap"></div>
+    <div class="glow" id="glow"></div>
+  </div>
 </div>
 
 <div id="main" style="display:none;flex-direction:column;align-items:center;">
@@ -153,6 +208,7 @@ button:hover {
 <script>
 const envelope=document.getElementById("envelope");
 const main=document.getElementById("main");
+const glow=document.getElementById("glow");
 const input=document.getElementById("input");
 const generateBtn=document.getElementById("generate");
 const letter=document.getElementById("letter");
@@ -160,36 +216,32 @@ const replyText=document.getElementById("replyText");
 const playBtn=document.getElementById("play");
 const stopBtn=document.getElementById("stop");
 const closeBtn=document.getElementById("close");
-
 let utter=null;
-
-// 背景随时间变化
-function updateBackground(){
-  const hour=new Date().getHours();
-  document.body.classList.remove("morning","afternoon","night");
-  if(hour>=6 && hour<12) document.body.classList.add("morning");
-  else if(hour>=12 && hour<18) document.body.classList.add("afternoon");
-  else document.body.classList.add("night");
-}
-updateBackground();
 
 // 打开信封动画
 function openEnvelope(){
-  envelope.style.opacity="0";
-  envelope.style.transform="scale(0.9)";
+  envelope.classList.add("open");
+  glow.style.animation="glowPulse 1.5s ease-out";
+  setTimeout(()=>{
+    envelope.style.opacity="0";
+    envelope.style.transform="scale(0.9)";
+  },1000);
   setTimeout(()=>{
     envelope.style.display="none";
     main.style.display="flex";
-  },800);
+  },1600);
 }
 envelope.addEventListener("click",openEnvelope);
 setTimeout(openEnvelope,3000);
 
 // 生成回信
 generateBtn.onclick=async()=>{
+  generateBtn.classList.add("glow-run");
+  setTimeout(()=>generateBtn.classList.remove("glow-run"),1200);
+
   const text=input.value.trim();
   if(!text){alert("请先写下你的心声");return;}
-  replyText.textContent="未来正在书写回信中……";
+  replyText.textContent="未来的你正在落笔回信中……";
   letter.style.display="block";
   const res=await fetch("/api/generate",{
     method:"POST",
@@ -197,7 +249,7 @@ generateBtn.onclick=async()=>{
     body:JSON.stringify({prompt:text})
   });
   const data=await res.json();
-  replyText.textContent=data.reply || "生成失败，请稍后重试。";
+  replyText.textContent=data.reply || "生成失败，请稍后再试。";
   playBtn.style.display="inline-block";
   stopBtn.style.display="none";
 };
@@ -207,20 +259,22 @@ playBtn.onclick=()=>{
   const text=replyText.textContent;
   utter=new SpeechSynthesisUtterance(text);
   utter.lang="zh-CN";
+  letter.classList.add("playing");
   speechSynthesis.speak(utter);
   playBtn.style.display="none";
   stopBtn.style.display="inline-block";
-  utter.onend=()=>{playBtn.style.display="inline-block";stopBtn.style.display="none";};
+  utter.onend=()=>{
+    playBtn.style.display="inline-block";
+    stopBtn.style.display="none";
+    letter.classList.remove("playing");
+  };
 };
-
-// 停止播放
 stopBtn.onclick=()=>{
   speechSynthesis.cancel();
+  letter.classList.remove("playing");
   playBtn.style.display="inline-block";
   stopBtn.style.display="none";
 };
-
-// 收起回信
 closeBtn.onclick=()=>{
   speechSynthesis.cancel();
   letter.style.display="none";
