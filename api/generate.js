@@ -11,19 +11,11 @@ async function callZhipu(prompt) {
     messages: [
       {
         role: "system",
-        content: `你是一位来自5-10年后的自己。请以温暖、睿智、鼓励的语气给现在的自己写一封回信。
-要求：
-1. 使用标准的信件格式（称呼、正文、结尾、署名）
-2. 字数在300-500字之间
-3. 语气真挚、富有洞察力
-4. 分享未来的感悟和给现在的建议
-5. 体现时间的沉淀和成长的智慧
-6. 针对用户的问题和困惑给予具体的建议
-7. 避免空洞的说教，用具体的例子和感悟来鼓励`
+        content: "你是一位来自5-10年后的自己。请以温暖、睿智、鼓励的语气给现在的自己写一封回信。使用标准的信件格式，字数在300-500字之间，语气真挚、富有洞察力，分享未来的感悟和给现在的建议。"
       },
       {
         role: "user",
-        content: `现在的我写给你：${prompt}`
+        content: "现在的我写给你：" + prompt
       }
     ],
     temperature: 0.85,
@@ -32,42 +24,26 @@ async function callZhipu(prompt) {
 
   const response = await axios.post(endpoint, body, {
     headers: {
-      Authorization: `Bearer ${ZHIPU_API_KEY}`,
+      Authorization: "Bearer " + ZHIPU_API_KEY,
       "Content-Type": "application/json"
     },
     timeout: 30000
   });
 
-  const content = response?.data?.choices?.[0]?.message?.content ||
-                 response?.data?.message ||
-                 "未来的你暂时无法回复，请稍后再试。";
+  const content = response?.data?.choices?.[0]?.message?.content || "未来的你暂时无法回复，请稍后再试。";
 
   return content;
 }
 
 export async function generateReply(message) {
   if (!ZHIPU_API_KEY) {
-    // 模拟回复用于测试
-    return `亲爱的现在的我，
-
-当我坐在未来宁静的书房里，提笔给你写这封信时，心中涌起万千感慨。我能感受到你此刻的焦虑与期待，那些深夜里的迷茫和白日里的奔波，我都历历在目。
-
-请相信，你现在走的每一步都算数。那些看似微不足道的努力，正在悄悄改变着你的人生轨迹。不要急于求成，成长需要时间的沉淀。学会在忙碌中给自己留白，在焦虑中保持耐心。
-
-关于你提到的困惑，我想说：每一个选择都有它的意义。无论你走向哪条路，都会遇见独特的风景。重要的是保持真诚和勇气，在每一个当下都全力以赴。
-
-未来的风景很美，但最美的其实是此刻你勇敢前行的模样。珍惜这个过程，因为正是这些点点滴滴，塑造了未来那个更加完整、更加从容的你。
-
-永远支持你的，
-未来的自己
-
-（这是一封测试回信，请设置ZHIPU_API_KEY环境变量以获得真实的AI回复）`;
+    return "亲爱的现在的我，\n\n当我坐在未来宁静的书房里，提笔给你写这封信时，心中涌起万千感慨。我能感受到你此刻的焦虑与期待，那些深夜里的迷茫和白日里的奔波，我都历历在目。\n\n请相信，你现在走的每一步都算数。那些看似微不足道的努力，正在悄悄改变着你的人生轨迹。不要急于求成，成长需要时间的沉淀。学会在忙碌中给自己留白，在焦虑中保持耐心。\n\n永远支持你的，\n未来的自己\n\n（这是一封测试回信，请设置ZHIPU_API_KEY环境变量以获得真实的AI回复）";
   }
 
   try {
     return await callZhipu(message);
   } catch (error) {
-    console.error("智谱AI调用错误:", error.response?.data || error.message);
+    console.error("智谱AI调用错误:", error.message);
     throw new Error("AI服务暂时不可用，请稍后重试");
   }
 }
