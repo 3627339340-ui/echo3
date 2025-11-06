@@ -1,92 +1,193 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>未来回音 💌</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>未来回音 💌</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:"PingFang SC","Segoe UI",sans-serif;overflow:hidden}
+  body{
+    display:flex;align-items:center;justify-content:center;
+    background: linear-gradient(160deg,#fde0e0,#f9c8d4);
+    transition:background 1.5s ease;
+  }
+
+  /* floating blurred color blobs */
+  .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:0.28}
+  .b1{width:300px;height:300px;left:8%;top:10%;background:rgba(255,160,200,0.6);animation:blob 12s ease-in-out infinite}
+  .b2{width:320px;height:320px;right:6%;bottom:8%;background:rgba(255,220,180,0.5);animation:blob 14s ease-in-out infinite;animation-delay:3s}
+  .b3{width:220px;height:220px;left:35%;bottom:6%;background:rgba(180,220,255,0.4);animation:blob 11s ease-in-out infinite;animation-delay:5s}
+  @keyframes blob{from{transform:translateY(0) translateX(0)} to{transform:translateY(-40px) translateX(30px)}}
+
+  /* stars */
+  .stars{position:absolute;inset:0;pointer-events:none;z-index:0}
+  .star{position:absolute;width:3px;height:3px;border-radius:50%;background:rgba(255,255,255,0.9);opacity:0.6;animation:tw 3s ease-in-out infinite alternate}
+  @keyframes tw{from{opacity:0.2;transform:scale(0.8)}to{opacity:0.9;transform:scale(1.4)}}
+
+  h1{position:absolute;top:14%;left:50%;transform:translateX(-50%);color:#fff;font-size:2.4rem;text-shadow:0 2px 10px rgba(0,0,0,0.18);z-index:2}
+
+  /* envelope */
+  .envelope{position:absolute;width:160px;height:100px;background:#fff;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.12);cursor:pointer;z-index:3;display:flex;align-items:center;justify-content:center}
+  .envelope .flap{position:absolute;top:0;left:0;width:100%;height:50%;clip-path:polygon(0 0, 100% 0, 50% 100%);background:linear-gradient(180deg,#fff,#f2f2f2);border-radius:10px 10px 0 0}
+
+  /* main container */
+  .ui{width:92%;max-width:760px;z-index:3;display:flex;flex-direction:column;align-items:center}
+
+  .panel{width:100%;max-width:680px;background:rgba(255,255,255,0.36);backdrop-filter:blur(12px);border-radius:20px;padding:28px;box-shadow:0 10px 30px rgba(0,0,0,0.08);display:none;flex-direction:column;align-items:center}
+
+  textarea{width:100%;min-height:220px;border-radius:14px;border:none;padding:16px;font-size:16px;background:rgba(255,255,255,0.9);outline:none;resize:vertical}
+
+  .btn{margin-top:18px;padding:12px 24px;border-radius:18px;border:none;background:rgba(255,255,255,0.6);cursor:pointer;font-weight:600}
+  .btn:hover{transform:translateY(-2px)}
+
+  .letter{width:100%;max-width:680px;background:rgba(255,255,255,0.96);border-radius:18px;padding:26px;margin-top:18px;box-shadow:0 12px 35px rgba(0,0,0,0.08);display:none;max-height:70vh;overflow-y:auto}
+
+  .controls{display:flex;gap:12px;justify-content:center;margin-top:14px}
+
+  /* letter appear animation */
+  .appear{animation:letterIn 420ms ease forwards}
+  @keyframes letterIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+</style>
 </head>
 <body>
-  <div class="background-decor decor1"></div>
-  <div class="background-decor decor2"></div>
-  <div class="background-decor decor3"></div>
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
 
-  <div class="container">
-    <h1>未来回音 💌</h1>
-    <div id="envelope" class="envelope"></div>
+  <div class="stars" id="stars"></div>
 
-    <div id="inputArea" style="display:none;">
-      <textarea id="userInput" placeholder="写下此刻想对未来的自己说的话..."></textarea>
-      <button id="generateBtn">生成未来回信</button>
+  <h1>未来回音 💌</h1>
+
+  <div class="envelope" id="envelope" style="top:48%;left:50%;transform:translate(-50%,-50%);">
+    <div class="flap"></div>
+  </div>
+
+  <div class="ui">
+    <div class="panel" id="panel">
+      <textarea id="input" placeholder="写下此刻的心声..."></textarea>
+      <button class="btn" id="generate">生成未来回信</button>
     </div>
 
-    <div id="replyArea" style="display:none;">
-      <div class="letter" id="replyText"></div>
-      <div class="actions">
-        <button id="voiceBtn">🔊 播放语音</button>
-        <button id="closeBtn">📩 收起回信</button>
+    <div class="letter" id="letter">
+      <pre id="reply" style="white-space:pre-wrap"></pre>
+      <div class="controls">
+        <button class="btn" id="play">🔊 播放语音</button>
+        <button class="btn" id="stop" style="display:none">⏹ 停止播放</button>
+        <button class="btn" id="collapse">📩 收起回信</button>
       </div>
     </div>
   </div>
 
-  <script>
-    const envelope = document.getElementById("envelope");
-    const inputArea = document.getElementById("inputArea");
-    const replyArea = document.getElementById("replyArea");
-    const generateBtn = document.getElementById("generateBtn");
-    const replyText = document.getElementById("replyText");
-    const voiceBtn = document.getElementById("voiceBtn");
-    const closeBtn = document.getElementById("closeBtn");
-    let speech;
+<script>
+  // generate star particles
+  const stars = document.getElementById('stars');
+  for (let i=0;i<60;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    s.style.opacity = 0.2 + Math.random()*0.8;
+    s.style.width = s.style.height = (1 + Math.random()*3)+'px';
+    stars.appendChild(s);
+  }
 
-    function showInput() {
-      envelope.style.display = "none";
-      inputArea.style.display = "flex";
-      inputArea.style.flexDirection = "column";
-      inputArea.style.alignItems = "center";
+  // elements
+  const envelope = document.getElementById('envelope');
+  const panel = document.getElementById('panel');
+  const letter = document.getElementById('letter');
+  const generateBtn = document.getElementById('generate');
+  const input = document.getElementById('input');
+  const replyEl = document.getElementById('reply');
+  const playBtn = document.getElementById('play');
+  const stopBtn = document.getElementById('stop');
+  const collapseBtn = document.getElementById('collapse');
+
+  let audioEl = null;
+
+  // time-based background
+  function setBgByTime(){
+    const h = new Date().getHours();
+    if (h >=6 && h <12) document.body.style.background = 'linear-gradient(160deg,#fde0e0,#f9c8d4)';
+    else if (h>=12 && h<18) document.body.style.background = 'linear-gradient(160deg,#ffd6a5,#ffb6b9)';
+    else document.body.style.background = 'linear-gradient(160deg,#c3aed6,#8675a9)';
+  }
+  setBgByTime();
+
+  function openPanel(){
+    envelope.style.display='none';
+    panel.style.display='flex';
+    panel.classList.add('appear');
+    input.focus();
+  }
+  envelope.addEventListener('click', openPanel);
+  setTimeout(openPanel,3000);
+
+  generateBtn.addEventListener('click', async ()=>{
+    const text = input.value.trim();
+    if (!text){ alert('请先写下你的心声'); return; }
+    panel.style.display='none';
+    letter.style.display='block';
+    replyEl.textContent = '未来的回信正在生成，请稍候...';
+
+    try {
+      const r = await fetch('/api/generate', {
+        method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ message: text })
+      });
+      const data = await r.json();
+      replyEl.textContent = data.reply || '生成失败，请稍后重试。';
+    } catch(err){
+      console.error(err);
+      replyEl.textContent = '生成失败，请稍后重试。';
     }
 
-    setTimeout(showInput, 3000);
-    envelope.addEventListener("click", showInput);
-
-    generateBtn.addEventListener("click", async () => {
-      const message = document.getElementById("userInput").value.trim();
-      if (!message) return alert("请输入内容～");
-
-      replyText.innerText = "正在写信中，请稍候...";
-      inputArea.style.display = "none";
-      replyArea.style.display = "block";
-
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message })
-      });
-
-      const data = await res.json();
-      replyText.innerText = data.reply || "生成失败，请重试。";
-    });
-
-    voiceBtn.addEventListener("click", () => {
-      if (speech) {
-        window.speechSynthesis.cancel();
-        speech = null;
-        voiceBtn.textContent = "🔊 播放语音";
+    // prepare server-side TTS audio (optional)
+    try {
+      const v = await fetch('/api/voice', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ text: replyEl.textContent }) });
+      if (v.ok){
+        const blob = await v.blob();
+        const url = URL.createObjectURL(blob);
+        audioEl = new Audio(url);
       } else {
-        speech = new SpeechSynthesisUtterance(replyText.innerText);
-        speech.lang = "zh-CN";
-        window.speechSynthesis.speak(speech);
-        voiceBtn.textContent = "⏹ 停止播放";
-        speech.onend = () => {
-          voiceBtn.textContent = "🔊 播放语音";
-          speech = null;
-        };
+        audioEl = null;
       }
-    });
+    } catch(e){
+      audioEl = null;
+    }
+  });
 
-    closeBtn.addEventListener("click", () => {
-      replyArea.style.display = "none";
-      inputArea.style.display = "flex";
-    });
-  </script>
+  playBtn.addEventListener('click', ()=>{
+    if (audioEl){
+      if (audioEl.paused){
+        audioEl.play();
+        playBtn.style.display='none';
+        stopBtn.style.display='inline-block';
+        audioEl.onended = () => { playBtn.style.display='inline-block'; stopBtn.style.display='none'; };
+      } else {
+        audioEl.pause();
+      }
+    } else {
+      // fallback: use browser TTS
+      const utter = new SpeechSynthesisUtterance(replyEl.textContent);
+      utter.lang = 'zh-CN';
+      speechSynthesis.speak(utter);
+      playBtn.style.display='none';
+      stopBtn.style.display='inline-block';
+      utter.onend = ()=>{ playBtn.style.display='inline-block'; stopBtn.style.display='none'; };
+    }
+  });
+
+  stopBtn.addEventListener('click', ()=>{
+    if (audioEl){ audioEl.pause(); playBtn.style.display='inline-block'; stopBtn.style.display='none'; }
+    speechSynthesis.cancel();
+  });
+
+  collapseBtn.addEventListener('click', ()=>{
+    letter.style.display='none';
+    panel.style.display='flex';
+    input.value='';
+  });
+</script>
 </body>
 </html>
