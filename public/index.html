@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>未来回音 💌</title>
 <style>
   body {
@@ -10,73 +10,123 @@
     height: 100vh;
     overflow: hidden;
     font-family: "PingFang SC", "SF Pro Display", sans-serif;
-    background: linear-gradient(180deg, #fff5eb 0%, #ffd7b5 40%, #ffbfa5 100%);
+    /* 🌸 暖粉渐变：中间浅，四周深 */
+    background: radial-gradient(circle at center, #ffe4e6 55%, #f1a1b3 100%);
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: background 1s ease;
+    color: white;
+  }
+
+  /* 💌 信封样式 */
+  .envelope {
+    width: 240px;
+    height: 160px;
+    position: relative;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    cursor: pointer;
+    transition: transform 0.5s ease;
+    animation: shake 1.8s ease-in-out infinite alternate;
+  }
+
+  .envelope::before,
+  .envelope::after {
+    content: '';
+    position: absolute;
+    border: 120px solid transparent;
+    left: 0;
+    right: 0;
+    margin: auto;
+  }
+
+  .envelope::before {
+    border-bottom-color: #fff;
+    top: -120px;
+  }
+
+  .envelope::after {
+    border-top-color: #fff;
+    bottom: -120px;
+  }
+
+  @keyframes shake {
+    0% { transform: rotate(0deg); }
+    50% { transform: rotate(2deg); }
+    100% { transform: rotate(-2deg); }
+  }
+
+  .fade-out {
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 1s ease;
+  }
+
+  /* 💬 主界面 */
+  .main {
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    transition: background 2s ease;
+    text-align: center;
+    width: 90%;
+    max-width: 620px;
+    margin-top: -5vh;
   }
 
   h1 {
-    font-size: 3em;
-    color: white;
-    text-shadow: 0 3px 10px rgba(255, 150, 100, 0.3);
-    margin-top: 10vh;
-    margin-bottom: 40px;
-    text-align: center;
-    letter-spacing: 3px;
-  }
-
-  .container {
-    text-align: center;
-    color: white;
-    width: 90%;
-    max-width: 600px;
+    font-size: 3.2em;
+    color: #fff;
+    text-shadow: 0 4px 15px rgba(255, 140, 160, 0.4);
+    margin-bottom: 45px;
+    letter-spacing: 2px;
   }
 
   .input-area {
+    backdrop-filter: blur(15px);
+    background: rgba(255,255,255,0.25);
+    border-radius: 25px;
+    padding: 30px;
+    box-shadow: 0 4px 30px rgba(255,150,160,0.4);
     display: flex;
     flex-direction: column;
     align-items: center;
-    backdrop-filter: blur(10px);
-    background: rgba(255,255,255,0.25);
-    border-radius: 25px;
-    padding: 25px;
-    box-shadow: 0 4px 20px rgba(255,150,100,0.25);
+    width: 100%;
   }
 
   textarea {
     width: 90%;
-    height: 120px;
+    height: 150px;
     border: none;
     border-radius: 15px;
     padding: 15px;
-    font-size: 16px;
+    font-size: 17px;
     resize: none;
     background: rgba(255,255,255,0.5);
     color: #333;
     outline: none;
-    margin-bottom: 20px;
-    backdrop-filter: blur(6px);
+    margin-bottom: 25px;
   }
 
   button {
     background: rgba(255,255,255,0.4);
-    backdrop-filter: blur(8px);
+    backdrop-filter: blur(10px);
     border: none;
     border-radius: 25px;
-    color: #fff;
+    color: white;
     font-size: 1.1em;
-    padding: 12px 28px;
+    padding: 12px 30px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 2px 8px rgba(255,150,100,0.3);
+    box-shadow: 0 4px 12px rgba(255,150,160,0.4);
   }
 
   button:hover {
     background: rgba(255,255,255,0.6);
-    color: #ff7f50;
+    color: #ff6f91;
   }
 
   .letter {
@@ -90,7 +140,7 @@
     max-height: 350px;
     overflow-y: auto;
     backdrop-filter: blur(12px);
-    box-shadow: 0 4px 25px rgba(255,150,100,0.2);
+    box-shadow: 0 4px 25px rgba(255,150,160,0.4);
   }
 
   .controls {
@@ -100,8 +150,6 @@
     gap: 20px;
   }
 
-  .hidden { display: none; }
-
   ::placeholder {
     color: #888;
   }
@@ -109,9 +157,13 @@
 </head>
 
 <body>
-  <h1>未来回音 💌</h1>
+  <!-- 💌 开场信封 -->
+  <div class="envelope" id="envelope"></div>
 
-  <div class="container">
+  <!-- ✉️ 主界面 -->
+  <div class="main" id="mainUI">
+    <h1>未来回音 💌</h1>
+
     <div class="input-area" id="inputArea">
       <textarea id="userInput" placeholder="写下此刻的心声吧..."></textarea>
       <button id="generateBtn">生成未来回信</button>
@@ -120,13 +172,15 @@
     <div class="letter" id="letterBox">
       <p id="replyText"></p >
       <div class="controls">
-        <button id="voiceBtn">🔊 播放语音</button>
+        <button id="voiceBtn">播放语音</button>
         <button id="closeBtn">收起回信</button>
       </div>
     </div>
   </div>
 
 <script>
+const envelope = document.getElementById("envelope");
+const mainUI = document.getElementById("mainUI");
 const generateBtn = document.getElementById("generateBtn");
 const inputArea = document.getElementById("inputArea");
 const letterBox = document.getElementById("letterBox");
@@ -134,12 +188,22 @@ const replyText = document.getElementById("replyText");
 const voiceBtn = document.getElementById("voiceBtn");
 const closeBtn = document.getElementById("closeBtn");
 
+// 💌 自动3秒后打开信封进入主界面
+setTimeout(() => {
+  envelope.classList.add("fade-out");
+  setTimeout(() => {
+    envelope.style.display = "none";
+    mainUI.style.display = "flex";
+  }, 1000);
+}, 3000);
+
+// ✉️ 智能生成未来回信
 generateBtn.onclick = async () => {
   const val = document.getElementById('userInput').value.trim();
   if (!val) return alert('请先写下你的心声 💌');
   inputArea.style.display = 'none';
   letterBox.style.display = 'block';
-  replyText.textContent = "正在生成未来的回信，请稍候...";
+  replyText.textContent = "未来的信件正在寄来，请稍候...";
 
   try {
     const res = await fetch("/api/generate", {
@@ -148,20 +212,23 @@ generateBtn.onclick = async () => {
       body: JSON.stringify({ prompt: val })
     });
     const data = await res.json();
-    replyText.textContent = data.reply;
+    replyText.textContent = data.reply || "未来的信件已抵达 💌";
   } catch (e) {
-    replyText.textContent = "未来的信件似乎在路上，请稍后再试 ✉️";
+    replyText.textContent = "信件迷失在时间的信道中，请稍后再试 💫";
   }
 };
 
+// 🔊 浏览器语音播放
 voiceBtn.onclick = () => {
-  const msg = new SpeechSynthesisUtterance(replyText.textContent);
-  msg.lang = "zh-CN";
-  msg.rate = 1;
-  msg.pitch = 1;
-  speechSynthesis.speak(msg);
+  const text = replyText.textContent;
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "zh-CN";
+  utter.rate = 1;
+  utter.pitch = 1.05;
+  speechSynthesis.speak(utter);
 };
 
+// 📩 收起回信
 closeBtn.onclick = () => {
   letterBox.style.display = "none";
   inputArea.style.display = "flex";
