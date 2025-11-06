@@ -1,55 +1,231 @@
-import express from "express";
-import fetch from "node-fetch";
-import path from "path";
-import dotenv from "dotenv";
-import { fileURLToPath } from "url";
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>未来回音 💌</title>
+<style>
+html,body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-family: "PingFang SC","SF Pro Display",sans-serif;
+  transition: background 2s ease;
+}
 
-dotenv.config();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+/* 动态背景色 */
+body.morning {
+  background: radial-gradient(circle at 50% 40%, #ffe6d0 30%, #ffb9a3 70%, #c96f5d 100%);
+}
+body.afternoon {
+  background: radial-gradient(circle at 50% 40%, #ffd6e2 30%, #e4a2e1 70%, #8e5ea7 100%);
+}
+body.night {
+  background: radial-gradient(circle at 50% 40%, #b9a4f0 25%, #6c56a2 70%, #2e1f54 100%);
+}
 
-const app = express();
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "public")));
+/* 信封 */
+.envelope-container {
+  width: 260px;
+  height: 170px;
+  cursor: pointer;
+  position: relative;
+  animation: gentleShake 2.5s ease-in-out infinite alternate;
+}
+@keyframes gentleShake {
+  0%,100% { transform: rotate(0deg); }
+  50% { transform: rotate(1.8deg); }
+}
+.envelope-body {
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  position: relative;
+}
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  background: linear-gradient(to bottom, #fff 0%, #f4f4f4 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  box-shadow: inset 0 -1px 4px rgba(0,0,0,0.05);
+}
 
-app.post("/api/generate", async (req, res) => {
-  try {
-    const prompt = req.body.prompt || "";
-    const apiKey = process.env.ZHIPU_API_KEY;
-    if (!apiKey) return res.status(500).json({ error: "ZHIPU_API_KEY 未设置" });
+/* 主界面 */
+h1 {
+  color: #fff;
+  font-size: 2.6rem;
+  margin: 5vh 0 2vh 0;
+  text-shadow: 0 4px 25px rgba(0,0,0,0.35);
+  letter-spacing: 2px;
+  text-align: center;
+}
+.panel {
+  background: rgba(255,255,255,0.3);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 20px;
+  width: 90%;
+  max-width: 700px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+textarea {
+  width: 100%;
+  min-height: 140px;
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  resize: vertical;
+  background: rgba(255,255,255,0.8);
+  font-size: 16px;
+  outline: none;
+}
+button {
+  border: none;
+  border-radius: 18px;
+  padding: 10px 22px;
+  margin-top: 12px;
+  color: #fff;
+  font-weight: 600;
+  background: rgba(255,255,255,0.25);
+  backdrop-filter: blur(10px);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+button:hover {
+  background: rgba(255,255,255,0.5);
+}
+#letter {
+  display: none;
+  margin-top: 20px;
+  background: rgba(255,255,255,0.95);
+  border-radius: 18px;
+  padding: 22px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+#letter pre {
+  white-space: pre-wrap;
+  font-size: 16px;
+  line-height: 1.8;
+}
+</style>
+</head>
+<body>
 
-    const systemMsg = `你是“未来的我”。请以书信格式（称呼、正文、结束语和署名）写一封信，语气温柔真诚，富有鼓励性，给现在的我一些安慰和启发。中文字数不少于200字。`;
+<div class="envelope-container" id="envelope">
+  <div class="envelope-body"></div>
+  <div class="envelope-flap"></div>
+</div>
 
-    const body = {
-      model: "glm-4-flash",
-      messages: [
-        { role: "system", content: systemMsg },
-        { role: "user", content: prompt || "我现在有些迷茫，请未来的我给我一封信。" }
-      ],
-      max_tokens: 800,
-      temperature: 0.85
-    };
+<div id="main" style="display:none;flex-direction:column;align-items:center;">
+  <h1>未来回音 💌</h1>
+  <div class="panel">
+    <textarea id="input" placeholder="写下此刻的心声..."></textarea>
+    <div style="text-align:right;">
+      <button id="generate">生成未来回信</button>
+    </div>
+  </div>
 
-    const resp = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
-      },
-      body: JSON.stringify(body)
-    });
+  <div id="letter">
+    <pre id="replyText"></pre>
+    <div style="text-align:right;">
+      <button id="play">播放语音</button>
+      <button id="stop" style="display:none;">停止播放</button>
+      <button id="close">收起回信</button>
+    </div>
+  </div>
+</div>
 
-    const data = await resp.json();
-    const reply = data?.choices?.[0]?.message?.content?.trim() ||
-      "未来的信件暂时无法生成，请稍后再试。";
+<script>
+const envelope=document.getElementById("envelope");
+const main=document.getElementById("main");
+const input=document.getElementById("input");
+const generateBtn=document.getElementById("generate");
+const letter=document.getElementById("letter");
+const replyText=document.getElementById("replyText");
+const playBtn=document.getElementById("play");
+const stopBtn=document.getElementById("stop");
+const closeBtn=document.getElementById("close");
 
-    res.json({ reply });
-  } catch (e) {
-    console.error("生成失败：", e);
-    res.status(500).json({ error: "生成失败" });
-  }
-});
+let utter=null;
 
-app.listen(process.env.PORT || 3000, () =>
-  console.log("✅ Server running on port", process.env.PORT || 3000)
-);
+// 背景随时间变化
+function updateBackground(){
+  const hour=new Date().getHours();
+  document.body.classList.remove("morning","afternoon","night");
+  if(hour>=6 && hour<12) document.body.classList.add("morning");
+  else if(hour>=12 && hour<18) document.body.classList.add("afternoon");
+  else document.body.classList.add("night");
+}
+updateBackground();
+
+// 打开信封动画
+function openEnvelope(){
+  envelope.style.opacity="0";
+  envelope.style.transform="scale(0.9)";
+  setTimeout(()=>{
+    envelope.style.display="none";
+    main.style.display="flex";
+  },800);
+}
+envelope.addEventListener("click",openEnvelope);
+setTimeout(openEnvelope,3000);
+
+// 生成回信
+generateBtn.onclick=async()=>{
+  const text=input.value.trim();
+  if(!text){alert("请先写下你的心声");return;}
+  replyText.textContent="未来正在书写回信中……";
+  letter.style.display="block";
+  const res=await fetch("/api/generate",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({prompt:text})
+  });
+  const data=await res.json();
+  replyText.textContent=data.reply || "生成失败，请稍后重试。";
+  playBtn.style.display="inline-block";
+  stopBtn.style.display="none";
+};
+
+// 播放语音
+playBtn.onclick=()=>{
+  const text=replyText.textContent;
+  utter=new SpeechSynthesisUtterance(text);
+  utter.lang="zh-CN";
+  speechSynthesis.speak(utter);
+  playBtn.style.display="none";
+  stopBtn.style.display="inline-block";
+  utter.onend=()=>{playBtn.style.display="inline-block";stopBtn.style.display="none";};
+};
+
+// 停止播放
+stopBtn.onclick=()=>{
+  speechSynthesis.cancel();
+  playBtn.style.display="inline-block";
+  stopBtn.style.display="none";
+};
+
+// 收起回信
+closeBtn.onclick=()=>{
+  speechSynthesis.cancel();
+  letter.style.display="none";
+  input.focus();
+};
+</script>
+</body>
+</html>
