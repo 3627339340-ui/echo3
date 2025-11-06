@@ -1,9 +1,7 @@
 :root {
   --glass: rgba(255, 255, 255, 0.25);
   --glass-strong: rgba(255, 255, 255, 0.92);
-  --glass-border: rgba(255, 255, 255, 0.3);
   --shadow: 0 20px 60px rgba(11, 18, 40, 0.15);
-  --shadow-strong: 0 25px 80px rgba(11, 18, 40, 0.2);
 }
 
 * {
@@ -14,7 +12,7 @@
 
 html, body {
   height: 100%;
-  font-family: "PingFang SC", "Helvetica Neue", Arial, "Noto Sans SC", sans-serif;
+  font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
   overflow: hidden;
 }
 
@@ -23,8 +21,6 @@ body {
   align-items: center;
   justify-content: center;
   transition: background 1.5s ease;
-  position: relative;
-  color: #2c3e50;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
@@ -34,7 +30,6 @@ body {
   z-index: 1;
   pointer-events: none;
   transition: all 1.5s ease;
-  filter: blur(1px);
 }
 
 #sun {
@@ -71,7 +66,6 @@ body {
   opacity: 0;
   z-index: 0;
   pointer-events: none;
-  transition: opacity 2s ease;
 }
 
 .app {
@@ -96,11 +90,6 @@ body {
   letter-spacing: 3px;
   text-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   z-index: 10;
-  backdrop-filter: blur(10px);
-  padding: 0 30px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid var(--glass-border);
 }
 
 .envelope-container {
@@ -120,20 +109,13 @@ body {
   height: 160px;
   border-radius: 16px;
   background: linear-gradient(135deg, #ffffff, #f8f9fa);
-  box-shadow: var(--shadow-strong);
+  box-shadow: var(--shadow);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   position: relative;
   animation: floatEnvelope 3s ease-in-out infinite;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  transition: all 0.5s ease;
-}
-
-.envelope:hover {
-  transform: scale(1.05);
-  box-shadow: 0 30px 90px rgba(11, 18, 40, 0.25);
 }
 
 .envelope::before {
@@ -151,14 +133,12 @@ body {
 .envelope::after {
   content: "💌";
   font-size: 3rem;
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1));
 }
 
 .envelope-hint {
   color: rgba(255, 255, 255, 0.9);
   font-size: 1.1rem;
   text-align: center;
-  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   animation: pulse 2s ease-in-out infinite;
 }
 
@@ -183,7 +163,6 @@ body {
   padding: 40px;
   box-shadow: var(--shadow);
   backdrop-filter: blur(20px);
-  border: 1px solid var(--glass-border);
   z-index: 10;
   flex-direction: column;
   align-items: center;
@@ -198,21 +177,12 @@ textarea {
   width: 100%;
   min-height: 240px;
   border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: none;
   padding: 24px;
   font-size: 16px;
-  line-height: 1.6;
   resize: vertical;
   outline: none;
   background: rgba(255, 255, 255, 0.9);
-  box-shadow: inset 0 2px 12px rgba(16, 24, 40, 0.06);
-  transition: all 0.3s ease;
-  font-family: inherit;
-}
-
-textarea:focus {
-  background: rgba(255, 255, 255, 0.95);
-  box-shadow: inset 0 2px 16px rgba(16, 24, 40, 0.08), 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
 
 .btn {
@@ -220,21 +190,10 @@ textarea:focus {
   padding: 14px 36px;
   border-radius: 16px;
   border: none;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
-  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.8);
   font-weight: 600;
   font-size: 16px;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(11, 18, 40, 0.12);
-  transition: all 0.3s ease;
-  color: #2c3e50;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-}
-
-.btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 32px rgba(11, 18, 40, 0.18);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 1), rgba(255, 255, 255, 0.9));
 }
 
 .letter {
@@ -245,12 +204,10 @@ textarea:focus {
   background: var(--glass-strong);
   border-radius: 24px;
   padding: 40px;
-  box-shadow: var(--shadow-strong);
+  box-shadow: var(--shadow);
   z-index: 10;
   overflow: hidden;
   flex-direction: column;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  backdrop-filter: blur(20px);
 }
 
 .letter .content {
@@ -260,25 +217,7 @@ textarea:focus {
   color: #2c3e50;
   line-height: 1.8;
   font-size: 16px;
-  background: transparent;
-  border-radius: 12px;
-  margin-bottom: 20px;
-  font-family: "Noto Serif SC", serif;
   white-space: pre-wrap;
-}
-
-.letter .content::-webkit-scrollbar {
-  width: 6px;
-}
-
-.letter .content::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
-}
-
-.letter .content::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
 }
 
 .controls {
@@ -295,15 +234,6 @@ textarea:focus {
   background: rgba(255, 255, 255, 0.8);
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.3s ease;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #2c3e50;
-}
-
-.control-btn:hover {
-  background: rgba(255, 255, 255, 1);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(11, 18, 40, 0.1);
 }
 
 .hidden {
@@ -322,7 +252,6 @@ textarea:focus {
 @media (max-width: 768px) {
   .title {
     font-size: 2.2rem;
-    top: 5%;
   }
   
   .input-card, .letter {
@@ -333,18 +262,5 @@ textarea:focus {
   .envelope {
     width: 180px;
     height: 120px;
-  }
-  
-  .letter {
-    height: 70vh;
-  }
-  
-  .controls {
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .control-btn {
-    width: 200px;
   }
 }
