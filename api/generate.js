@@ -1,26 +1,47 @@
-// api/generate.js
-import OpenAI from "openai";
+// server.js
+import express from "express";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import { generateReply } from "./api/generate.js"; // named export — fixed
+import voiceRouter from "./api/voice.js"; // optional voice route (created below)
 
-const client = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+
+// API: generate a letter
+app.post("/api/generate", async (req, res) => {
+  try {
+    const { message } = req.body || {};
+    if (!message || typeof message !== "string" || message.trim().length === 0) {
+      return res.status(400).json({ error: "请输入要发送给未来自己的内容（message）。" });
+    }
+
+    const reply = await generateReply(message.trim());
+    return res.json({ reply });
+  } catch (err) {
+    console.error("ERROR /api/generate:", err);
+    return res.status(500).json({ error: "生成失败，请稍后重试。" });
+  }
 });
 
-// ✅ 导出函数
-export async function generateReply(message) {
-  const prompt = `
-你是来自未来的自己，请写一封温暖、真诚的信给现在的自己，
-信件语气自然，格式规范（包括称呼与结尾），
-内容要富有感情、鼓励与反思，长度不少于200字。
-用户写给未来的信息如下：
-${message}
-`;
+// Optional: server-side voice endpoint (returns audio/mpeg) — implemented in api/voice.js
+app.use("/api/voice", voiceRouter);
 
-  const completion = await client.chat.completions.create({
-    model: "gpt-4o-mini",
-    messages: [{ role: "user", content: prompt }],
-  });
+// Fallback route to index.html (for static single-page)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
-  return completion.choices[0].message.content.trim();
-}
-
-export default { generateReply };
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`✅ future-echo server started on port ${PORT}`);
+});
