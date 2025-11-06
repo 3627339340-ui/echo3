@@ -1,41 +1,46 @@
+import express from "express";
 import fetch from "node-fetch";
 import dotenv from "dotenv";
 dotenv.config();
 
-export async function generateReply(message) {
-  const apiKey = process.env.ZHIPU_API_KEY;
-  if (!apiKey) {
-    console.error("❌ 未检测到 ZHIPU_API_KEY，请在环境变量中设置。");
-    return { reply: "⚠️ 服务器未配置智谱 API。" };
-  }
+const app = express();
+app.use(express.json());
 
+app.post("/api/generate", async (req, res) => {
+  const { message } = req.body;
   try {
     const response = await fetch("https://open.bigmodel.cn/api/paas/v4/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Content-Type": "application/json"
+        "Authorization": `Bearer ${process.env.ZHIPU_API_KEY}`,
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         model: "glm-4",
         messages: [
-          {
-            role: "system",
-            content: "你是一位温柔的未来自己，请以信件形式回信，语气温暖、细腻、有情感。字数约两百字。"
-          },
-          {
-            role: "user",
-            content: message
-          }
-        ]
-      })
+          { role: "system", content: "你是一位温柔的未来自己，请以信件的语气写一封回信，字数不少于200字。" },
+          { role: "user", content: message }
+        ],
+      }),
     });
 
     const data = await response.json();
-    const reply = data?.choices?.[0]?.message?.content || "未来的自己暂时无语。";
-    return { reply };
-  } catch (error) {
-    console.error("生成出错：", error);
-    return { reply: "服务器暂时无法生成，请稍后再试。" };
+    res.json({ reply: data.choices?.[0]?.message?.content || "未来的自己暂时还没来信哦 🌙" });
+  } catch (err) {
+    res.status(500).json({ error: "生成失败", details: err.message });
   }
-}
+});
+
+app.post("/api/voice", async (req, res) => {
+  const { text } = req.body;
+  try {
+    const tts = await fetch(`https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=zh-CN&client=tw-ob`);
+    const arrayBuffer = await tts.arrayBuffer();
+    res.set("Content-Type", "audio/mpeg");
+    res.send(Buffer.from(arrayBuffer));
+  } catch (err) {
+    res.status(500).json({ error: "语音生成失败", details: err.message });
+  }
+});
+
+app.listen(3000, () => console.log("Server running on port 3000"));
