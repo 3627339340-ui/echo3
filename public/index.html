@@ -1,28 +1,130 @@
-<script>
-  async function generateReply(text) {
-    try {
-      const response = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ prompt: text })
-      });
-      const data = await response.json();
-      if (data.reply) return data.reply;
-      else throw new Error("未返回内容");
-    } catch (err) {
-      console.error(err);
-      return "未来的你一定会感谢此刻努力的自己。💌（智能回信暂时不可用）";
-    }
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>未来回音 💌</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    font-family: "PingFang SC", "SF Pro Display", sans-serif;
+    background: radial-gradient(circle at center, rgba(255,180,220,0.8), rgba(120,0,120,1));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 2s ease;
   }
 
-  generateBtn.onclick = async () => {
-    const val = document.getElementById('userInput').value.trim();
-    if (!val) return alert('请先写下你的心声哦 💌');
-    replyText.textContent = "正在生成未来的回信，请稍候...";
-    inputArea.style.display = 'none';
-    letterBox.classList.add('show');
+  .container {
+    text-align: center;
+    color: white;
+    width: 90%;
+    max-width: 600px;
+  }
 
-    const reply = await generateReply(val);
-    replyText.textContent = reply;
-  };
-</script>
+  h1 {
+    font-size: 2.6em;
+    background: linear-gradient(90deg, rgba(255,200,230,0.9), rgba(160,200,255,0.9));
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 40px;
+  }
+
+  .input-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 20px;
+    width: 100%;
+  }
+
+  textarea {
+    width: 90%;
+    height: 120px;
+    border: none;
+    border-radius: 10px;
+    padding: 15px;
+    font-size: 16px;
+    resize: none;
+    background: rgba(255,255,255,0.3);
+    color: #333;
+    outline: none;
+    margin-bottom: 20px;
+  }
+
+  button {
+    background: rgba(255,255,255,0.3);
+    backdrop-filter: blur(8px);
+    border: none;
+    border-radius: 25px;
+    color: white;
+    font-size: 1.1em;
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  button:hover {
+    background: rgba(255,255,255,0.5);
+  }
+
+  .letter {
+    display: none;
+    width: 100%;
+    margin-top: 30px;
+    background: rgba(255,255,255,0.25);
+    color: #222;
+    border-radius: 20px;
+    padding: 20px;
+    max-height: 350px;
+    overflow-y: auto;
+    backdrop-filter: blur(12px);
+  }
+
+  .controls {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+
+  .hidden { display: none; }
+</style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>未来回音</h1>
+    <div class="input-area" id="inputArea">
+      <textarea id="userInput" placeholder="写下此刻的心声吧..."></textarea>
+      <button id="generateBtn">生成未来回信</button>
+    </div>
+
+    <div class="letter" id="letterBox">
+      <p id="replyText"></p >
+      <div class="controls">
+        <button id="voiceBtn">🔊 播放语音</button>
+        <button id="closeBtn">收起回信</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const generateBtn = document.getElementById("generateBtn");
+const inputArea = document.getElementById("inputArea");
+const letterBox = document.getElementById("letterBox");
+const replyText = document.getElementById("replyText");
+const voiceBtn = document.getElementById("voiceBtn");
+const closeBtn = document.getElementById("closeBtn");
+
+generateBtn.onclick = async () => {
+  const val = document.getElementById('userInput').value.trim();
+  if (!val) return alert('请先写下你的心声 💌');
+  inputArea.style.display = 'none';
+  letterBox.style.display = 'block';
+  replyText.textContent =
