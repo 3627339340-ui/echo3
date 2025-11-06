@@ -15,7 +15,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
-// API路由
 app.post("/api/generate", async (req, res) => {
   try {
     const { message } = req.body || {};
@@ -30,12 +29,10 @@ app.post("/api/generate", async (req, res) => {
   }
 });
 
-// 健康检查端点
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// SPA回退
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
@@ -43,5 +40,4 @@ app.get("*", (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Future Echo 服务器已启动在端口 ${PORT}`);
-  console.log(`📧 ZHIPU_API_KEY: ${process.env.ZHIPU_API_KEY ? "已设置" : "未设置"}`);
 });
