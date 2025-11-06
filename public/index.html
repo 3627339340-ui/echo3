@@ -14,95 +14,90 @@ html,body {
   flex-direction:column;
   overflow:hidden;
   font-family:"PingFang SC","SF Pro Display",sans-serif;
-  background: radial-gradient(circle at 50% 40%, #ffdce6 35%, #f9a3b2 70%, #b96a79 100%);
-  animation: gradientShift 10s ease-in-out infinite alternate;
-  transition: background 2s ease-in-out;
+  background: radial-gradient(circle at 50% 40%, #ffe0ea 35%, #f8a8b8 75%, #a75769 100%);
+  animation: gradientMove 10s ease-in-out infinite alternate;
 }
-@keyframes gradientShift {
-  0% { background: radial-gradient(circle at 50% 45%, #ffdce6 40%, #f8a8b8 70%, #b96a79 100%); }
-  100% { background: radial-gradient(circle at 45% 40%, #ffe3e9 30%, #f7b6c5 65%, #9d5f6e 100%); }
+@keyframes gradientMove {
+  0% { background: radial-gradient(circle at 45% 40%, #ffdfe9 40%, #f7a6b7 70%, #b96b7c 100%); }
+  100% { background: radial-gradient(circle at 55% 45%, #ffe5ed 30%, #f8b3c1 65%, #8f4f61 100%); }
 }
 
-/* 信封容器 */
-.envelope-container {
-  width:270px;
-  height:180px;
-  position:relative;
-  cursor:pointer;
-  perspective:800px;
-  animation: gentleShake 3s ease-in-out infinite alternate;
+/* 信封外观 */
+.envelope {
+  position: relative;
+  width: 260px;
+  height: 170px;
+  background: linear-gradient(180deg, #ffffff 0%, #f4f4f4 100%);
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+  cursor: pointer;
+  perspective: 800px;
+  animation: shake 3s ease-in-out infinite alternate;
 }
-@keyframes gentleShake {
+@keyframes shake {
   0%,100% { transform: rotate(0deg); }
-  50% { transform: rotate(1.3deg); }
+  50% { transform: rotate(1.4deg); }
 }
-
-/* 信封主体 */
-.envelope-body {
-  width:100%;
-  height:100%;
-  background: linear-gradient(180deg, #fff 0%, #f9f9f9 100%);
-  border-radius:14px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
-  position:relative;
-  overflow:hidden;
+.envelope:before, .envelope:after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 85px;
+  background: linear-gradient(to bottom, #ffffff 0%, #f1f1f1 100%);
+  border-radius: 14px 14px 0 0;
 }
-
-/* 信封上盖 */
-.envelope-flap {
-  position:absolute;
-  top:0;
-  left:0;
-  width:100%;
-  height:95px;
-  background: linear-gradient(to bottom, #fff 0%, #f4f4f4 100%);
+.envelope:after {
+  top: 0;
   clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transition: transform 1s ease;
   transform-origin: top;
-  transition: transform 0.9s ease;
-  box-shadow: inset 0 -2px 6px rgba(0,0,0,0.06);
+  box-shadow: inset 0 -2px 5px rgba(0,0,0,0.05);
 }
-.envelope-container.open .envelope-flap {
+.envelope.open:after {
   transform: rotateX(160deg);
 }
-
-/* 柔光闪烁 */
-.glow {
+.envelope-glow {
   position:absolute;
   inset:0;
-  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
-  opacity:0;
   border-radius:14px;
-  pointer-events:none;
-  animation: glowPulse 1.6s ease-out;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 0%, transparent 70%);
+  opacity:0;
+  animation: glow 1.5s ease-out;
 }
-@keyframes glowPulse {
-  0% { opacity:0.7; transform:scale(0.8); }
-  100% { opacity:0; transform:scale(1.5); }
+@keyframes glow {
+  from {opacity:0.8; transform:scale(0.9);}
+  to {opacity:0; transform:scale(1.4);}
 }
 
-/* 标题 */
+/* 主标题 */
 h1 {
   color:#fff;
-  font-size:2.6rem;
-  text-align:center;
-  text-shadow:0 4px 25px rgba(0,0,0,0.35);
-  margin:5vh 0 2vh;
+  font-size:2.5rem;
+  font-weight:700;
   letter-spacing:2px;
+  text-shadow:0 3px 25px rgba(0,0,0,0.3);
+  margin:4vh 0 2vh;
 }
 
-/* 面板 */
+/* 主体 */
+.main {
+  display:none;
+  flex-direction:column;
+  align-items:center;
+}
 .panel {
   background: rgba(255,255,255,0.35);
   backdrop-filter: blur(15px);
   border-radius:22px;
-  padding:22px;
+  padding:20px;
   width:90%;
   max-width:700px;
-  box-shadow:0 8px 25px rgba(0,0,0,0.12);
+  box-shadow:0 6px 25px rgba(0,0,0,0.12);
 }
 textarea {
   width:100%;
-  min-height:140px;
+  min-height:230px;
   padding:15px;
   border:none;
   border-radius:12px;
@@ -112,38 +107,20 @@ textarea {
   outline:none;
 }
 
-/* 按钮流光效果 */
+/* 按钮 */
 button {
   border:none;
   border-radius:18px;
-  padding:10px 24px;
-  margin-top:14px;
+  padding:10px 22px;
+  margin:8px;
   color:#fff;
   font-weight:600;
-  background: rgba(255,255,255,0.25);
+  background: rgba(255,255,255,0.3);
   backdrop-filter: blur(10px);
   cursor:pointer;
   transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
 }
-button:hover {
-  background: rgba(255,255,255,0.45);
-}
-button::before {
-  content: "";
-  position: absolute;
-  top:0; left:-50%;
-  width:50%;
-  height:100%;
-  background: linear-gradient(120deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.9) 50%, rgba(255,255,255,0) 100%);
-  transform: skewX(-20deg);
-  transition: all 0.5s;
-}
-button.glow-run::before {
-  left:120%;
-  transition: all 1.2s;
-}
+button:hover { background: rgba(255,255,255,0.45); }
 
 /* 回信信纸 */
 #letter {
@@ -156,22 +133,15 @@ button.glow-run::before {
   max-width:700px;
   max-height:400px;
   overflow-y:auto;
-  box-shadow:0 8px 25px rgba(0,0,0,0.12);
+  box-shadow:0 8px 25px rgba(0,0,0,0.15);
   animation: fadeIn 1s ease forwards;
 }
-#letter.playing {
-  animation: glowBreath 2s infinite alternate;
-}
-@keyframes glowBreath {
-  0% { box-shadow: 0 0 20px rgba(255,200,220,0.4); }
-  100% { box-shadow: 0 0 35px rgba(255,180,220,0.7); }
-}
 @keyframes fadeIn {
-  from { opacity:0; transform: translateY(10px); }
-  to { opacity:1; transform: translateY(0); }
+  from {opacity:0; transform:translateY(10px);}
+  to {opacity:1; transform:translateY(0);}
 }
 pre {
-  white-space:pre-wrap;
+  white-space: pre-wrap;
   font-size:16px;
   line-height:1.8;
 }
@@ -179,25 +149,22 @@ pre {
 </head>
 <body>
 
-<div class="envelope-container" id="envelope">
-  <div class="envelope-body">
-    <div class="envelope-flap"></div>
-    <div class="glow" id="glow"></div>
-  </div>
+<div class="envelope" id="envelope">
+  <div class="envelope-glow" id="glow"></div>
 </div>
 
-<div id="main" style="display:none;flex-direction:column;align-items:center;">
+<div class="main" id="main">
   <h1>未来回音 💌</h1>
   <div class="panel">
-    <textarea id="input" placeholder="写下此刻的心声..."></textarea>
-    <div style="text-align:right;">
+    <textarea id="input" placeholder="写下你现在想说的话吧..."></textarea>
+    <div style="text-align:center;">
       <button id="generate">生成未来回信</button>
     </div>
   </div>
 
   <div id="letter">
     <pre id="replyText"></pre>
-    <div style="text-align:right;">
+    <div style="text-align:center;">
       <button id="play">播放语音</button>
       <button id="stop" style="display:none;">停止播放</button>
       <button id="close">收起回信</button>
@@ -207,8 +174,8 @@ pre {
 
 <script>
 const envelope=document.getElementById("envelope");
-const main=document.getElementById("main");
 const glow=document.getElementById("glow");
+const main=document.getElementById("main");
 const input=document.getElementById("input");
 const generateBtn=document.getElementById("generate");
 const letter=document.getElementById("letter");
@@ -218,13 +185,12 @@ const stopBtn=document.getElementById("stop");
 const closeBtn=document.getElementById("close");
 let utter=null;
 
-// 打开信封动画
 function openEnvelope(){
   envelope.classList.add("open");
-  glow.style.animation="glowPulse 1.5s ease-out";
+  glow.style.opacity="1";
   setTimeout(()=>{
+    glow.style.opacity="0";
     envelope.style.opacity="0";
-    envelope.style.transform="scale(0.9)";
   },1000);
   setTimeout(()=>{
     envelope.style.display="none";
@@ -234,52 +200,32 @@ function openEnvelope(){
 envelope.addEventListener("click",openEnvelope);
 setTimeout(openEnvelope,3000);
 
-// 生成回信
 generateBtn.onclick=async()=>{
-  generateBtn.classList.add("glow-run");
-  setTimeout(()=>generateBtn.classList.remove("glow-run"),1200);
-
   const text=input.value.trim();
   if(!text){alert("请先写下你的心声");return;}
-  replyText.textContent="未来的你正在落笔回信中……";
+  replyText.textContent="未来的你正在写信中……";
   letter.style.display="block";
-  const res=await fetch("/api/generate",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({prompt:text})
-  });
+  const res=await fetch("/api/generate",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:text})});
   const data=await res.json();
-  replyText.textContent=data.reply || "生成失败，请稍后再试。";
+  replyText.textContent=data.reply || "未来的你说：要继续勇敢前行。";
   playBtn.style.display="inline-block";
   stopBtn.style.display="none";
 };
 
-// 播放语音
 playBtn.onclick=()=>{
   const text=replyText.textContent;
   utter=new SpeechSynthesisUtterance(text);
   utter.lang="zh-CN";
-  letter.classList.add("playing");
   speechSynthesis.speak(utter);
   playBtn.style.display="none";
   stopBtn.style.display="inline-block";
   utter.onend=()=>{
     playBtn.style.display="inline-block";
     stopBtn.style.display="none";
-    letter.classList.remove("playing");
   };
 };
-stopBtn.onclick=()=>{
-  speechSynthesis.cancel();
-  letter.classList.remove("playing");
-  playBtn.style.display="inline-block";
-  stopBtn.style.display="none";
-};
-closeBtn.onclick=()=>{
-  speechSynthesis.cancel();
-  letter.style.display="none";
-  input.focus();
-};
+stopBtn.onclick=()=>{speechSynthesis.cancel();playBtn.style.display="inline-block";stopBtn.style.display="none";};
+closeBtn.onclick=()=>{speechSynthesis.cancel();letter.style.display="none";};
 </script>
 </body>
 </html>
