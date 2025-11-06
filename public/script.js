@@ -1,4 +1,4 @@
-// script.js - 去掉天气效果，只保留太阳月亮
+// script.js - 简化版，只保留太阳月亮效果
 // --- elements ---
 const envelopeContainer = document.getElementById("envelopeContainer");
 const envelope = document.getElementById("envelope");
@@ -16,7 +16,7 @@ const sun = document.getElementById("sun");
 const moon = document.getElementById("moon");
 
 // --- 时间管理 ---
-function updateTimeAndWeather() {
+function updateTimeAndBackground() {
   const now = new Date();
   const h = now.getHours();
   const minutes = now.getMinutes();
@@ -31,23 +31,23 @@ function updateTimeAndWeather() {
 function updateBackgroundByTime(hour) {
   let bg;
   if (hour >= 5 && hour < 8) {
-    // 清晨 - 淡橙粉
-    bg = "linear-gradient(135deg, #FFE4B5, #FFB6C1)";
+    // 清晨 - 柔和的粉橙色
+    bg = "linear-gradient(135deg, #FFE8D6, #FFD1DC)";
   } else if (hour >= 8 && hour < 12) {
-    // 上午 - 明亮蓝
-    bg = "linear-gradient(135deg, #87CEEB, #98FB98)";
+    // 上午 - 柔和的蓝绿色
+    bg = "linear-gradient(135deg, #D4F1F9, #E2F0CB)";
   } else if (hour >= 12 && hour < 16) {
-    // 中午 - 鲜艳蓝
-    bg = "linear-gradient(135deg, #4682B4, #87CEEB)";
+    // 中午 - 柔和的蓝色
+    bg = "linear-gradient(135deg, #C5E3F6, #DCD3F9)";
   } else if (hour >= 16 && hour < 19) {
-    // 傍晚 - 橙紫
-    bg = "linear-gradient(135deg, #FF8C00, #DA70D6)";
+    // 傍晚 - 柔和的紫橙色
+    bg = "linear-gradient(135deg, #FEC5E5, #F8D6A3)";
   } else if (hour >= 19 && hour < 22) {
-    // 夜晚初 - 深蓝紫
-    bg = "linear-gradient(135deg, #4B0082, #191970)";
+    // 夜晚初 - 柔和的蓝紫色
+    bg = "linear-gradient(135deg, #A8BFFF, #D9A7FF)";
   } else {
-    // 深夜 - 深蓝黑
-    bg = "linear-gradient(135deg, #00008B, #000000)";
+    // 深夜 - 柔和的深蓝色
+    bg = "linear-gradient(135deg, #6A82FB, #3A1C71)";
   }
   
   document.body.style.background = bg;
@@ -64,9 +64,9 @@ function updateCelestialBodies(hour, minutes) {
     
     // 太阳轨迹：从左到右的弧线
     const sunX = dayProgress * 100;
-    const sunY = 30 + 40 * Math.sin((dayProgress - 0.25) * Math.PI);
+    const sunY = 25 + 50 * Math.sin((dayProgress - 0.25) * Math.PI);
     
-    sun.style.left = `calc(${sunX}% - 60px)`;
+    sun.style.left = `calc(${sunX}% - 50px)`;
     sun.style.top = `${sunY}%`;
   } else {
     sun.style.opacity = '0';
@@ -74,22 +74,22 @@ function updateCelestialBodies(hour, minutes) {
     
     // 月亮轨迹：夜晚显示
     const moonX = ((hour - 18 + 24) % 24) / 12 * 100;
-    const moonY = 30 + 40 * Math.sin(((moonX / 100) - 0.25) * Math.PI);
+    const moonY = 25 + 50 * Math.sin(((moonX / 100) - 0.25) * Math.PI);
     
-    moon.style.left = `calc(${moonX}% - 50px)`;
+    moon.style.left = `calc(${moonX}% - 40px)`;
     moon.style.top = `${moonY}%`;
   }
 }
 
 // --- 星星效果 ---
-function spawnStars(count = 80) {
+function spawnStars(count = 60) {
   for (let i = 0; i < count; i++) {
     const s = document.createElement("div");
     s.className = "star";
     s.style.left = Math.random() * 100 + "%";
     s.style.top = Math.random() * 100 + "%";
     s.style.animationDelay = Math.random() * 3 + "s";
-    s.style.width = (1 + Math.random() * 3) + "px";
+    s.style.width = (1 + Math.random() * 2) + "px";
     s.style.height = s.style.width;
     starsContainer.appendChild(s);
   }
@@ -98,7 +98,7 @@ function spawnStars(count = 80) {
 function showStars() {
   const stars = document.querySelectorAll('.star');
   stars.forEach(star => {
-    star.style.opacity = '0.6';
+    star.style.opacity = '0.4';
     star.style.animation = `twinkle ${3 + Math.random() * 4}s ease-in-out infinite`;
   });
   
@@ -107,8 +107,8 @@ function showStars() {
     style.id = 'starAnimations';
     style.textContent = `
       @keyframes twinkle {
-        0%, 100% { opacity: 0.3; transform: scale(1); }
-        50% { opacity: 1; transform: scale(1.2); }
+        0%, 100% { opacity: 0.2; transform: scale(1); }
+        50% { opacity: 0.8; transform: scale(1.1); }
       }
     `;
     document.head.appendChild(style);
@@ -123,11 +123,11 @@ function hideStars() {
 }
 
 // --- 漂浮光斑 ---
-function createFloatingLights(count = 6) {
+function createFloatingLights(count = 4) {
   for (let i = 0; i < count; i++) {
     const light = document.createElement('div');
     light.className = 'floating-light';
-    light.style.width = `${150 + Math.random() * 200}px`;
+    light.style.width = `${120 + Math.random() * 150}px`;
     light.style.height = light.style.width;
     light.style.left = `${Math.random() * 100}%`;
     light.style.top = `${Math.random() * 100}%`;
@@ -141,10 +141,10 @@ function createFloatingLights(count = 6) {
     style.id = 'lightAnimations';
     style.textContent = `
       @keyframes float {
-        0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
-        25% { transform: translate(100px, -50px) scale(1.1); opacity: 0.5; }
-        50% { transform: translate(50px, -100px) scale(0.9); opacity: 0.4; }
-        75% { transform: translate(-50px, -50px) scale(1.05); opacity: 0.6; }
+        0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+        25% { transform: translate(80px, -40px) scale(1.05); opacity: 0.3; }
+        50% { transform: translate(40px, -80px) scale(0.95); opacity: 0.25; }
+        75% { transform: translate(-40px, -40px) scale(1.02); opacity: 0.35; }
       }
     `;
     document.head.appendChild(style);
@@ -251,12 +251,18 @@ collapseBtn.addEventListener("click", ()=>{
 
 // --- 初始化 ---
 function init() {
-  spawnStars(80);
-  createFloatingLights(6);
-  updateTimeAndWeather();
+  spawnStars(60);
+  createFloatingLights(4);
+  updateTimeAndBackground();
   
-  // 每分钟更新一次时间
-  setInterval(updateTimeAndWeather, 60000);
+  // 每分钟更新一次时间和背景
+  setInterval(updateTimeAndBackground, 60000);
+  
+  // 夜晚显示星星
+  const hour = new Date().getHours();
+  if (hour >= 19 || hour < 6) {
+    showStars();
+  }
 }
 
 // 启动
