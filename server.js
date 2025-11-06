@@ -1,24 +1,19 @@
-// server.js
 import express from "express";
-import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import { generateReply } from "./api/generate.js";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
-app.use(express.static("public"));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-// 生成回信
+const app = express();
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+
 app.post("/api/generate", async (req, res) => {
-  try {
-    const { message } = req.body;
-    const reply = await generateReply(message);
-    res.json({ reply });
-  } catch (err) {
-    console.error("生成失败：", err);
-    res.status(500).json({ error: "生成失败" });
-  }
+  const { prompt } = req.body;
+  const reply = await generateReply(prompt);
+  res.json({ reply });
 });
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`✅ Server running on port ${port}`));
+app.listen(3000, () => console.log("🚀 Server running on port 3000"));
