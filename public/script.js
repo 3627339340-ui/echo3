@@ -87,18 +87,6 @@ function showStars() {
     star.style.opacity = '0.4';
     star.style.animation = `twinkle ${3 + Math.random() * 4}s ease-in-out infinite`;
   });
-  
-  if (!document.querySelector('#starAnimations')) {
-    const style = document.createElement('style');
-    style.id = 'starAnimations';
-    style.textContent = `
-      @keyframes twinkle {
-        0%, 100% { opacity: 0.2; transform: scale(1); }
-        50% { opacity: 0.8; transform: scale(1.1); }
-      }
-    `;
-    document.head.appendChild(style);
-  }
 }
 
 function hideStars() {
@@ -120,20 +108,6 @@ function createFloatingLights(count = 4) {
     light.style.animation = `float ${15 + Math.random() * 20}s ease-in-out infinite`;
     light.style.animationDelay = `${Math.random() * 10}s`;
     floatingLights.appendChild(light);
-  }
-  
-  if (!document.querySelector('#lightAnimations')) {
-    const style = document.createElement('style');
-    style.id = 'lightAnimations';
-    style.textContent = `
-      @keyframes float {
-        0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
-        25% { transform: translate(80px, -40px) scale(1.05); opacity: 0.3; }
-        50% { transform: translate(40px, -80px) scale(0.95); opacity: 0.25; }
-        75% { transform: translate(-40px, -40px) scale(1.02); opacity: 0.35; }
-      }
-    `;
-    document.head.appendChild(style);
   }
 }
 
@@ -252,20 +226,30 @@ function init() {
   if (hour >= 19 || hour < 6) {
     showStars();
   }
+  
+  // 添加CSS动画
+  if (!document.querySelector('#animations')) {
+    const style = document.createElement('style');
+    style.id = 'animations';
+    style.textContent = `
+      @keyframes twinkle {
+        0%, 100% { opacity: 0.2; transform: scale(1); }
+        50% { opacity: 0.8; transform: scale(1.1); }
+      }
+      @keyframes float {
+        0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+        25% { transform: translate(80px, -40px) scale(1.05); opacity: 0.3; }
+        50% { transform: translate(40px, -80px) scale(0.95); opacity: 0.25; }
+        75% { transform: translate(-40px, -40px) scale(1.02); opacity: 0.35; }
+      }
+      @keyframes fadeOut {
+        from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        to { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+      }
+    `;
+    document.head.appendChild(style);
+  }
 }
 
 // 启动
 document.addEventListener('DOMContentLoaded', init);
-
-// 添加淡出动画
-if (!document.querySelector('#fadeAnimations')) {
-  const style = document.createElement('style');
-  style.id = 'fadeAnimations';
-  style.textContent = `
-    @keyframes fadeOut {
-      from { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-      to { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-    }
-  `;
-  document.head.appendChild(style);
-}
