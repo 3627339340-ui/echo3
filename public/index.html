@@ -6,42 +6,54 @@
   <title>未来回音 💌</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
+    html,body{height:100%;overflow:hidden;font-family:"PingFang SC","Segoe UI",sans-serif;}
+
     body {
-      height:100vh;
       display:flex;
       justify-content:center;
       align-items:center;
       flex-direction:column;
-      background: radial-gradient(circle at center, #f7f4f2 40%, #d9d6d3 100%);
-      /* 装饰渐变光斑 */
-      background-image:
-        radial-gradient(circle at 20% 30%, rgba(255,200,220,0.15) 0%, transparent 60%),
-        radial-gradient(circle at 80% 70%, rgba(200,230,255,0.12) 0%, transparent 60%);
-      transition: background 1s ease;
-      font-family:"PingFang SC","Segoe UI",sans-serif;
-      overflow:hidden;
+      transition:background 2s ease;
+      background: radial-gradient(circle at 30% 20%, #fdf3f0, #f3e0dc);
     }
 
-    /* 信封 */
+    /* 光斑效果 */
+    .decor {
+      position:fixed;
+      width:120vw;
+      height:120vh;
+      top:-10vh;
+      left:-10vw;
+      background:
+        radial-gradient(circle at 25% 25%, rgba(255,200,220,0.18), transparent 60%),
+        radial-gradient(circle at 80% 60%, rgba(255,250,200,0.12), transparent 60%),
+        radial-gradient(circle at 60% 90%, rgba(200,220,255,0.15), transparent 70%);
+      pointer-events:none;
+      z-index:0;
+      filter:blur(60px);
+    }
+
+    /* 信封动画 */
     .envelope {
-      width:200px;
-      height:140px;
+      position:relative;
+      width:220px;
+      height:150px;
       background:#fff;
-      border-radius:10px;
+      border-radius:12px;
       box-shadow:0 8px 30px rgba(0,0,0,0.12);
       cursor:pointer;
       animation:shake 3s ease-in-out infinite;
-      position: relative;
+      z-index:10;
     }
     .envelope::before {
       content:'';
       position:absolute;
       top:0; left:0;
       width:100%; height:100%;
-      clip-path: polygon(0 0, 50% 60%, 100% 0);
-      background: linear-gradient(135deg, #fff, #f7f7f7);
+      clip-path:polygon(0 0,50% 60%,100% 0);
+      background:linear-gradient(135deg,#fff,#f5f5f5);
       border-bottom:1px solid rgba(0,0,0,0.05);
-      border-radius:10px 10px 0 0;
+      border-radius:12px 12px 0 0;
     }
     @keyframes shake {
       0%,100%{transform:rotate(0deg);}
@@ -50,20 +62,23 @@
       75%{transform:rotate(1deg);}
     }
 
-    /* 主界面 输入 & 信纸 */
+    /* 主界面 */
     .main, .reply-page {
       display:none;
       flex-direction:column;
       align-items:center;
       width:100%;
       height:100%;
+      z-index:10;
+      position:relative;
     }
+
     h1 {
       color:#fff;
       font-size:2.4rem;
       letter-spacing:3px;
-      margin-top:4vh;
-      text-shadow:0 0 12px rgba(255,255,255,0.5);
+      margin-top:5vh;
+      text-shadow:0 0 15px rgba(255,255,255,0.5);
     }
 
     .input-container {
@@ -74,33 +89,36 @@
       width:100%;
       padding:0 10vw;
     }
+
     .input-box {
       width:100%;
-      max-width:600px;
+      max-width:700px;
       background:rgba(255,255,255,0.35);
       backdrop-filter:blur(12px);
-      border-radius:24px;
-      padding:30px;
-      box-shadow:0 10px 30px rgba(0,0,0,0.1);
+      border-radius:28px;
+      padding:40px;
+      box-shadow:0 10px 35px rgba(0,0,0,0.1);
     }
+
     textarea {
       width:100%;
-      height:220px;
+      height:280px;
       background:rgba(255,255,255,0.9);
       border:none;
-      border-radius:15px;
+      border-radius:20px;
       padding:18px;
-      font-size:16px;
+      font-size:17px;
       outline:none;
-      margin-bottom:20px;
+      margin-bottom:25px;
       resize:none;
     }
+
     button {
       background:rgba(255,255,255,0.3);
       backdrop-filter:blur(10px);
       border:none;
       border-radius:25px;
-      padding:14px 32px;
+      padding:14px 36px;
       font-size:16px;
       color:#333;
       cursor:pointer;
@@ -110,28 +128,31 @@
       background:rgba(255,255,255,0.5);
     }
 
+    /* 回信界面 */
     .reply-page {
       align-items:center;
       justify-content:center;
       padding:0 10vw 5vh;
     }
+
     .letter {
       width:100%;
-      max-width:620px;
+      max-width:720px;
       background:rgba(255,255,255,0.96);
       border-radius:20px;
-      padding:30px;
+      padding:40px;
       box-shadow:0 12px 35px rgba(0,0,0,0.1);
       font-size:16px;
       line-height:1.8;
       color:#333;
       overflow-y:auto;
-      max-height:60vh;
+      max-height:65vh;
     }
+
     .reply-controls {
       margin-top:20px;
       display:flex;
-      gap:16px;
+      gap:20px;
       justify-content:center;
     }
 
@@ -139,9 +160,10 @@
 </head>
 <body>
 
+  <div class="decor"></div>
+
   <div class="envelope" id="envelope"></div>
 
-  <!-- 输入界面 -->
   <div class="main" id="main">
     <h1>未来回音 💌</h1>
     <div class="input-container">
@@ -154,7 +176,6 @@
     </div>
   </div>
 
-  <!-- 回信界面 -->
   <div class="reply-page" id="replyPage">
     <div class="letter" id="replyContent"></div>
     <div class="reply-controls">
@@ -176,6 +197,22 @@
     const collapseBtn = document.getElementById('collapseBtn');
     let utter;
 
+    // ⏰ 根据时间变化背景
+    function updateBackgroundByTime() {
+      const hour = new Date().getHours();
+      let bg;
+      if (hour >= 6 && hour < 12) {
+        bg = 'radial-gradient(circle at 30% 20%, #fde8ec, #f7c9b6)';
+      } else if (hour >= 12 && hour < 18) {
+        bg = 'radial-gradient(circle at 30% 20%, #ffe9d2, #f7d8a9)';
+      } else {
+        bg = 'radial-gradient(circle at 30% 20%, #e4d4f7, #b8a3e8)';
+      }
+      document.body.style.background = bg;
+    }
+    updateBackgroundByTime();
+
+    // 信封动画
     function showMain(){
       envelope.style.display='none';
       main.style.display='flex';
@@ -183,6 +220,7 @@
     envelope.addEventListener('click', showMain);
     setTimeout(showMain, 3000);
 
+    // 生成回信
     generateBtn.addEventListener('click', async ()=> {
       const text = userInput.value.trim();
       if(!text){alert('请写下你的心声…'); return;}
@@ -206,6 +244,7 @@
       stopAudioBtn.style.display='none';
     });
 
+    // 播放与停止语音
     playAudioBtn.addEventListener('click', ()=> {
       const text = replyContent.textContent;
       playAudioBtn.style.display='none';
@@ -218,13 +257,13 @@
       };
       speechSynthesis.speak(utter);
     });
-
     stopAudioBtn.addEventListener('click', ()=> {
       speechSynthesis.cancel();
       playAudioBtn.style.display='inline-block';
       stopAudioBtn.style.display='none';
     });
 
+    // 收起回信
     collapseBtn.addEventListener('click', ()=> {
       speechSynthesis.cancel();
       replyPage.style.display='none';
