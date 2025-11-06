@@ -1,0 +1,93 @@
+body {
+  margin: 0;
+  font-family: "PingFang SC", "Segoe UI", sans-serif;
+  color: #333;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transition: background 2s ease;
+  position: relative;
+}
+
+h1 {
+  font-size: 2em;
+  margin-bottom: 10px;
+  color: #444;
+}
+
+#messageForm {
+  display: flex;
+  gap: 10px;
+}
+
+input {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  width: 240px;
+}
+
+button {
+  background: #ffb6b9;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #ff8c94;
+}
+
+#replyBox {
+  margin-top: 20px;
+  padding: 15px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  max-width: 80%;
+  text-align: center;
+  min-height: 60px;
+  backdrop-filter: blur(10px);
+}
+
+/* 信封漂浮动画 */
+.envelope {
+  position: absolute;
+  bottom: -50px;
+  width: 32px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.6);
+  clip-path: polygon(0% 0%, 100% 0%, 50% 50%);
+  animation: floatUp linear infinite;
+}
+
+@keyframes floatUp {
+  from {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-110vh) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+/* 星光闪烁 */
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  opacity: 0;
+  animation: twinkle ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.4); }
+}
