@@ -1,155 +1,237 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>未来回音 💌</title>
   <style>
-    * {margin:0;padding:0;box-sizing:border-box;}
+    *{box-sizing:border-box;margin:0;padding:0;}
     body {
-      height:100vh;display:flex;justify-content:center;align-items:center;
-      background: radial-gradient(circle at center, #f7e6e8 45%, #d2a4a7 100%);
-      font-family: "PingFang SC","Helvetica Neue",sans-serif;
-      transition: background 1.2s ease;
+      height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      flex-direction:column;
+      background: radial-gradient(circle at center, #f7f4f2 40%, #d9d6d3 100%);
+      /* 装饰渐变光斑 */
+      background-image:
+        radial-gradient(circle at 20% 30%, rgba(255,200,220,0.15) 0%, transparent 60%),
+        radial-gradient(circle at 80% 70%, rgba(200,230,255,0.12) 0%, transparent 60%);
+      transition: background 1s ease;
+      font-family:"PingFang SC","Segoe UI",sans-serif;
       overflow:hidden;
     }
+
+    /* 信封 */
     .envelope {
-      width:180px;height:120px;background:#fff;border-radius:8px;
-      border:2px solid rgba(255,255,255,0.8);
-      box-shadow:0 6px 20px rgba(0,0,0,0.1);
-      animation: shake 3s ease-in-out infinite;
-      position:relative;cursor:pointer;
+      width:200px;
+      height:140px;
+      background:#fff;
+      border-radius:10px;
+      box-shadow:0 8px 30px rgba(0,0,0,0.12);
+      cursor:pointer;
+      animation:shake 3s ease-in-out infinite;
+      position: relative;
     }
-    .envelope::before{
-      content:'';position:absolute;width:100%;height:100%;left:0;top:0;
-      clip-path:polygon(0 0,50% 60%,100% 0);
-      background:linear-gradient(135deg,#f7f7f7,#fafafa);
+    .envelope::before {
+      content:'';
+      position:absolute;
+      top:0; left:0;
+      width:100%; height:100%;
+      clip-path: polygon(0 0, 50% 60%, 100% 0);
+      background: linear-gradient(135deg, #fff, #f7f7f7);
       border-bottom:1px solid rgba(0,0,0,0.05);
+      border-radius:10px 10px 0 0;
     }
-    @keyframes shake{
+    @keyframes shake {
       0%,100%{transform:rotate(0deg);}
       25%{transform:rotate(2deg);}
       50%{transform:rotate(-2deg);}
       75%{transform:rotate(1deg);}
     }
-    .main,.reply-page{display:none;flex-direction:column;align-items:center;text-align:center;animation:fadeIn 1.2s ease forwards;}
-    h1{color:white;font-size:2.3em;letter-spacing:4px;margin-bottom:30px;text-shadow:0 0 10px rgba(255,255,255,0.6);}
-    .input-box{
-      background:rgba(255,255,255,0.3);backdrop-filter:blur(10px);
-      border-radius:20px;padding:25px;width:90%;max-width:450px;
-      display:flex;flex-direction:column;align-items:center;
+
+    /* 主界面 输入 & 信纸 */
+    .main, .reply-page {
+      display:none;
+      flex-direction:column;
+      align-items:center;
+      width:100%;
+      height:100%;
+    }
+    h1 {
+      color:#fff;
+      font-size:2.4rem;
+      letter-spacing:3px;
+      margin-top:4vh;
+      text-shadow:0 0 12px rgba(255,255,255,0.5);
+    }
+
+    .input-container {
+      flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      width:100%;
+      padding:0 10vw;
+    }
+    .input-box {
+      width:100%;
+      max-width:600px;
+      background:rgba(255,255,255,0.35);
+      backdrop-filter:blur(12px);
+      border-radius:24px;
+      padding:30px;
       box-shadow:0 10px 30px rgba(0,0,0,0.1);
     }
-    textarea{
-      width:100%;height:150px;border:none;border-radius:15px;padding:15px;
-      background:rgba(255,255,255,0.9);font-size:16px;outline:none;margin-bottom:15px;resize:none;
-    }
-    button{
-      background:rgba(255,255,255,0.35);backdrop-filter:blur(10px);
-      border:none;border-radius:25px;padding:12px 28px;font-size:16px;
-      transition:all 0.3s ease;cursor:pointer;color:#333;
-    }
-    button:hover{background:rgba(255,255,255,0.55);}
-    .letter{
+    textarea {
+      width:100%;
+      height:220px;
       background:rgba(255,255,255,0.9);
-      border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.1);
-      width:90%;max-width:500px;padding:25px;text-align:left;
-      line-height:1.8;font-size:15px;color:#333;margin-bottom:20px;
-      overflow-y:auto;max-height:300px;
+      border:none;
+      border-radius:15px;
+      padding:18px;
+      font-size:16px;
+      outline:none;
+      margin-bottom:20px;
+      resize:none;
     }
-    .reply-controls{display:flex;gap:12px;justify-content:center;}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+    button {
+      background:rgba(255,255,255,0.3);
+      backdrop-filter:blur(10px);
+      border:none;
+      border-radius:25px;
+      padding:14px 32px;
+      font-size:16px;
+      color:#333;
+      cursor:pointer;
+      transition:all 0.3s;
+    }
+    button:hover {
+      background:rgba(255,255,255,0.5);
+    }
+
+    .reply-page {
+      align-items:center;
+      justify-content:center;
+      padding:0 10vw 5vh;
+    }
+    .letter {
+      width:100%;
+      max-width:620px;
+      background:rgba(255,255,255,0.96);
+      border-radius:20px;
+      padding:30px;
+      box-shadow:0 12px 35px rgba(0,0,0,0.1);
+      font-size:16px;
+      line-height:1.8;
+      color:#333;
+      overflow-y:auto;
+      max-height:60vh;
+    }
+    .reply-controls {
+      margin-top:20px;
+      display:flex;
+      gap:16px;
+      justify-content:center;
+    }
+
   </style>
 </head>
 <body>
+
   <div class="envelope" id="envelope"></div>
 
+  <!-- 输入界面 -->
   <div class="main" id="main">
     <h1>未来回音 💌</h1>
-    <div class="input-box">
-      <textarea id="userInput" placeholder="写下你想对未来的自己说的话..."></textarea>
-      <button id="generateBtn">生成未来回信</button>
+    <div class="input-container">
+      <div class="input-box">
+        <textarea id="userInput" placeholder="写下此刻你想对未来的自己说的话..."></textarea>
+        <div style="text-align:center;">
+          <button id="generateBtn">生成未来回信</button>
+        </div>
+      </div>
     </div>
   </div>
 
+  <!-- 回信界面 -->
   <div class="reply-page" id="replyPage">
     <div class="letter" id="replyContent"></div>
     <div class="reply-controls">
-      <button id="playAudio">🔊 播放语音</button>
-      <button id="stopAudio" style="display:none;">⏹ 停止播放</button>
-      <button id="collapseBtn">📩 收起回信</button>
+      <button id="playAudio">播放语音</button>
+      <button id="stopAudio" style="display:none;">停止播放</button>
+      <button id="collapseBtn">收起回信</button>
     </div>
   </div>
 
   <script>
-    const envelope = document.getElementById("envelope");
-    const main = document.getElementById("main");
-    const replyPage = document.getElementById("replyPage");
-    const generateBtn = document.getElementById("generateBtn");
-    const userInput = document.getElementById("userInput");
-    const replyContent = document.getElementById("replyContent");
-    const playAudioBtn = document.getElementById("playAudio");
-    const stopAudioBtn = document.getElementById("stopAudio");
-    const collapseBtn = document.getElementById("collapseBtn");
+    const envelope = document.getElementById('envelope');
+    const main = document.getElementById('main');
+    const replyPage = document.getElementById('replyPage');
+    const generateBtn = document.getElementById('generateBtn');
+    const userInput = document.getElementById('userInput');
+    const replyContent = document.getElementById('replyContent');
+    const playAudioBtn = document.getElementById('playAudio');
+    const stopAudioBtn = document.getElementById('stopAudio');
+    const collapseBtn = document.getElementById('collapseBtn');
+    let utter;
 
-    let audio;
-
-    // 信封点击或自动展开
-    const showMain = () => {
-      envelope.style.display = "none";
-      main.style.display = "flex";
-    };
-    envelope.onclick = showMain;
+    function showMain(){
+      envelope.style.display='none';
+      main.style.display='flex';
+    }
+    envelope.addEventListener('click', showMain);
     setTimeout(showMain, 3000);
 
-    // 调用后端生成回信
-    generateBtn.onclick = async () => {
+    generateBtn.addEventListener('click', async ()=> {
       const text = userInput.value.trim();
-      if (!text) return alert("请写点什么吧 💭");
-      main.style.display = "none";
-      replyPage.style.display = "flex";
-      replyContent.textContent = "生成中，请稍候... ✨";
+      if(!text){alert('请写下你的心声…'); return;}
+      main.style.display='none';
+      replyPage.style.display='flex';
+      replyContent.textContent = "来自未来的信正在生成，请稍候…";
 
       try {
-        const res = await fetch("/api/generate", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: text })
+        const res = await fetch('/api/generate', {
+          method:'POST',
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ prompt: text })
         });
         const data = await res.json();
-        replyContent.textContent = data.reply || "生成失败，请稍后再试。";
-      } catch (err) {
-        replyContent.textContent = "出错了，请稍后重试。";
+        replyContent.textContent = data.reply || "未来的你暂时无语，请稍后再试。";
+      } catch(err){
+        console.error(err);
+        replyContent.textContent = "生成失败，请稍后再试。";
       }
-    };
+      playAudioBtn.style.display='inline-block';
+      stopAudioBtn.style.display='none';
+    });
 
-    // 播放语音
-    playAudioBtn.onclick = () => {
+    playAudioBtn.addEventListener('click', ()=> {
       const text = replyContent.textContent;
-      playAudioBtn.style.display = "none";
-      stopAudioBtn.style.display = "inline-block";
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = "zh-CN";
-      utter.rate = 1;
-      utter.onend = () => {
-        playAudioBtn.style.display = "inline-block";
-        stopAudioBtn.style.display = "none";
+      playAudioBtn.style.display='none';
+      stopAudioBtn.style.display='inline-block';
+      utter = new SpeechSynthesisUtterance(text);
+      utter.lang='zh-CN';
+      utter.onend = ()=> {
+        playAudioBtn.style.display='inline-block';
+        stopAudioBtn.style.display='none';
       };
       speechSynthesis.speak(utter);
-      audio = utter;
-    };
+    });
 
-    stopAudioBtn.onclick = () => {
+    stopAudioBtn.addEventListener('click', ()=> {
       speechSynthesis.cancel();
-      playAudioBtn.style.display = "inline-block";
-      stopAudioBtn.style.display = "none";
-    };
+      playAudioBtn.style.display='inline-block';
+      stopAudioBtn.style.display='none';
+    });
 
-    collapseBtn.onclick = () => {
-      replyPage.style.display = "none";
-      main.style.display = "flex";
-      userInput.value = "";
-    };
+    collapseBtn.addEventListener('click', ()=> {
+      speechSynthesis.cancel();
+      replyPage.style.display='none';
+      main.style.display='flex';
+      userInput.value = '';
+    });
   </script>
+
 </body>
 </html>
