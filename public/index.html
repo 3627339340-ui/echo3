@@ -1,276 +1,221 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>未来回音 💌</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0;}
-    html,body{height:100%;overflow:hidden;font-family:"PingFang SC","Segoe UI",sans-serif;}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>未来回音 💌</title>
+    <style>
+      html, body {
+        margin: 0;
+        height: 100%;
+        font-family: "PingFang SC", "Segoe UI", sans-serif;
+        transition: background 1s ease;
+        overflow: hidden;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: linear-gradient(160deg, #fbe7ea, #f5c5c8);
+        position: relative;
+      }
 
-    body {
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      flex-direction:column;
-      transition:background 2s ease;
-      background: radial-gradient(circle at 30% 20%, #fdf3f0, #f3e0dc);
-    }
+      .overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(circle at 25% 30%, rgba(255,255,255,0.25), transparent 50%),
+                    radial-gradient(circle at 80% 70%, rgba(255,210,210,0.2), transparent 50%);
+        mix-blend-mode: soft-light;
+      }
 
-    /* 光斑效果 */
-    .decor {
-      position:fixed;
-      width:120vw;
-      height:120vh;
-      top:-10vh;
-      left:-10vw;
-      background:
-        radial-gradient(circle at 25% 25%, rgba(255,200,220,0.18), transparent 60%),
-        radial-gradient(circle at 80% 60%, rgba(255,250,200,0.12), transparent 60%),
-        radial-gradient(circle at 60% 90%, rgba(200,220,255,0.15), transparent 70%);
-      pointer-events:none;
-      z-index:0;
-      filter:blur(60px);
-    }
+      .envelope {
+        width: 120px;
+        height: 80px;
+        background: linear-gradient(180deg, #ffffff, #f1e1e1);
+        border-radius: 10px;
+        position: relative;
+        cursor: pointer;
+        animation: shake 1.2s ease-in-out infinite alternate;
+        box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      }
 
-    /* 信封动画 */
-    .envelope {
-      position:relative;
-      width:220px;
-      height:150px;
-      background:#fff;
-      border-radius:12px;
-      box-shadow:0 8px 30px rgba(0,0,0,0.12);
-      cursor:pointer;
-      animation:shake 3s ease-in-out infinite;
-      z-index:10;
-    }
-    .envelope::before {
-      content:'';
-      position:absolute;
-      top:0; left:0;
-      width:100%; height:100%;
-      clip-path:polygon(0 0,50% 60%,100% 0);
-      background:linear-gradient(135deg,#fff,#f5f5f5);
-      border-bottom:1px solid rgba(0,0,0,0.05);
-      border-radius:12px 12px 0 0;
-    }
-    @keyframes shake {
-      0%,100%{transform:rotate(0deg);}
-      25%{transform:rotate(2deg);}
-      50%{transform:rotate(-2deg);}
-      75%{transform:rotate(1deg);}
-    }
+      .envelope::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 120px;
+        height: 40px;
+        background: linear-gradient(180deg, #f5f1f1, #e4cfcf);
+        clip-path: polygon(0 0, 100% 0, 50% 100%);
+      }
 
-    /* 主界面 */
-    .main, .reply-page {
-      display:none;
-      flex-direction:column;
-      align-items:center;
-      width:100%;
-      height:100%;
-      z-index:10;
-      position:relative;
-    }
+      @keyframes shake {
+        0% { transform: rotate(0deg); }
+        25% { transform: rotate(2deg); }
+        50% { transform: rotate(0deg); }
+        75% { transform: rotate(-2deg); }
+        100% { transform: rotate(0deg); }
+      }
 
-    h1 {
-      color:#fff;
-      font-size:2.4rem;
-      letter-spacing:3px;
-      margin-top:5vh;
-      text-shadow:0 0 15px rgba(255,255,255,0.5);
-    }
+      .container {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        color: white;
+      }
 
-    .input-container {
-      flex:1;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      width:100%;
-      padding:0 10vw;
-    }
+      h1 {
+        font-size: 2.4em;
+        margin-bottom: 25px;
+        text-align: center;
+      }
 
-    .input-box {
-      width:100%;
-      max-width:700px;
-      background:rgba(255,255,255,0.35);
-      backdrop-filter:blur(12px);
-      border-radius:28px;
-      padding:40px;
-      box-shadow:0 10px 35px rgba(0,0,0,0.1);
-    }
+      textarea {
+        width: 80%;
+        height: 180px;
+        border: none;
+        outline: none;
+        border-radius: 16px;
+        padding: 18px;
+        font-size: 16px;
+        resize: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      }
 
-    textarea {
-      width:100%;
-      height:280px;
-      background:rgba(255,255,255,0.9);
-      border:none;
-      border-radius:20px;
-      padding:18px;
-      font-size:17px;
-      outline:none;
-      margin-bottom:25px;
-      resize:none;
-    }
+      button {
+        margin-top: 20px;
+        padding: 10px 25px;
+        border: none;
+        border-radius: 25px;
+        font-size: 16px;
+        cursor: pointer;
+        backdrop-filter: blur(10px);
+        background: rgba(255,255,255,0.3);
+        color: white;
+        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+        transition: 0.3s;
+      }
+      button:hover { transform: scale(1.05); }
 
-    button {
-      background:rgba(255,255,255,0.3);
-      backdrop-filter:blur(10px);
-      border:none;
-      border-radius:25px;
-      padding:14px 36px;
-      font-size:16px;
-      color:#333;
-      cursor:pointer;
-      transition:all 0.3s;
-    }
-    button:hover {
-      background:rgba(255,255,255,0.5);
-    }
+      .letter {
+        display: none;
+        background: #fffafc;
+        color: #333;
+        width: 80%;
+        height: 60%;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+        padding: 25px;
+        overflow-y: auto;
+        font-size: 17px;
+        line-height: 1.8;
+      }
 
-    /* 回信界面 */
-    .reply-page {
-      align-items:center;
-      justify-content:center;
-      padding:0 10vw 5vh;
-    }
+      .actions {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="overlay"></div>
 
-    .letter {
-      width:100%;
-      max-width:720px;
-      background:rgba(255,255,255,0.96);
-      border-radius:20px;
-      padding:40px;
-      box-shadow:0 12px 35px rgba(0,0,0,0.1);
-      font-size:16px;
-      line-height:1.8;
-      color:#333;
-      overflow-y:auto;
-      max-height:65vh;
-    }
+    <div class="envelope" id="envelope"></div>
 
-    .reply-controls {
-      margin-top:20px;
-      display:flex;
-      gap:20px;
-      justify-content:center;
-    }
+    <div class="container" id="main">
+      <h1>未来回音 💌</h1>
+      <textarea id="message" placeholder="写下此刻的想法，寄给未来的自己..."></textarea>
+      <button id="generateBtn">生成未来回信</button>
 
-  </style>
-</head>
-<body>
-
-  <div class="decor"></div>
-
-  <div class="envelope" id="envelope"></div>
-
-  <div class="main" id="main">
-    <h1>未来回音 💌</h1>
-    <div class="input-container">
-      <div class="input-box">
-        <textarea id="userInput" placeholder="写下此刻你想对未来的自己说的话..."></textarea>
-        <div style="text-align:center;">
-          <button id="generateBtn">生成未来回信</button>
-        </div>
+      <div class="letter" id="letter"></div>
+      <div class="actions" id="actions" style="display:none;">
+        <button id="voiceBtn">🔊 播放语音</button>
+        <button id="closeBtn">📨 收起回信</button>
       </div>
     </div>
-  </div>
 
-  <div class="reply-page" id="replyPage">
-    <div class="letter" id="replyContent"></div>
-    <div class="reply-controls">
-      <button id="playAudio">播放语音</button>
-      <button id="stopAudio" style="display:none;">停止播放</button>
-      <button id="collapseBtn">收起回信</button>
-    </div>
-  </div>
+    <script>
+      const envelope = document.getElementById("envelope");
+      const main = document.getElementById("main");
+      const letter = document.getElementById("letter");
+      const actions = document.getElementById("actions");
+      const voiceBtn = document.getElementById("voiceBtn");
+      const closeBtn = document.getElementById("closeBtn");
+      const generateBtn = document.getElementById("generateBtn");
+      const msgInput = document.getElementById("message");
 
-  <script>
-    const envelope = document.getElementById('envelope');
-    const main = document.getElementById('main');
-    const replyPage = document.getElementById('replyPage');
-    const generateBtn = document.getElementById('generateBtn');
-    const userInput = document.getElementById('userInput');
-    const replyContent = document.getElementById('replyContent');
-    const playAudioBtn = document.getElementById('playAudio');
-    const stopAudioBtn = document.getElementById('stopAudio');
-    const collapseBtn = document.getElementById('collapseBtn');
-    let utter;
+      let currentSpeech = null;
 
-    // ⏰ 根据时间变化背景
-    function updateBackgroundByTime() {
-      const hour = new Date().getHours();
-      let bg;
-      if (hour >= 6 && hour < 12) {
-        bg = 'radial-gradient(circle at 30% 20%, #fde8ec, #f7c9b6)';
-      } else if (hour >= 12 && hour < 18) {
-        bg = 'radial-gradient(circle at 30% 20%, #ffe9d2, #f7d8a9)';
-      } else {
-        bg = 'radial-gradient(circle at 30% 20%, #e4d4f7, #b8a3e8)';
+      envelope.addEventListener("click", openEnvelope);
+      setTimeout(openEnvelope, 3000);
+
+      function openEnvelope() {
+        envelope.style.display = "none";
+        main.style.display = "flex";
       }
-      document.body.style.background = bg;
-    }
-    updateBackgroundByTime();
 
-    // 信封动画
-    function showMain(){
-      envelope.style.display='none';
-      main.style.display='flex';
-    }
-    envelope.addEventListener('click', showMain);
-    setTimeout(showMain, 3000);
+      const hour = new Date().getHours();
+      if (hour >= 6 && hour < 12) {
+        document.body.style.background = "linear-gradient(160deg, #fde2e4, #fad0c4)";
+      } else if (hour >= 12 && hour < 18) {
+        document.body.style.background = "linear-gradient(160deg, #ffd6a5, #ffb6b9)";
+      } else {
+        document.body.style.background = "linear-gradient(160deg, #c3aed6, #8675a9)";
+      }
 
-    // 生成回信
-    generateBtn.addEventListener('click', async ()=> {
-      const text = userInput.value.trim();
-      if(!text){alert('请写下你的心声…'); return;}
-      main.style.display='none';
-      replyPage.style.display='flex';
-      replyContent.textContent = "来自未来的信正在生成，请稍候…";
-
-      try {
-        const res = await fetch('/api/generate', {
-          method:'POST',
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ prompt: text })
+      generateBtn.addEventListener("click", async () => {
+        const message = msgInput.value.trim();
+        if (!message) return alert("请先写下给未来的信件内容。");
+        generateBtn.innerText = "正在生成...";
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message })
         });
         const data = await res.json();
-        replyContent.textContent = data.reply || "未来的你暂时无语，请稍后再试。";
-      } catch(err){
-        console.error(err);
-        replyContent.textContent = "生成失败，请稍后再试。";
-      }
-      playAudioBtn.style.display='inline-block';
-      stopAudioBtn.style.display='none';
-    });
+        generateBtn.innerText = "生成未来回信";
 
-    // 播放与停止语音
-    playAudioBtn.addEventListener('click', ()=> {
-      const text = replyContent.textContent;
-      playAudioBtn.style.display='none';
-      stopAudioBtn.style.display='inline-block';
-      utter = new SpeechSynthesisUtterance(text);
-      utter.lang='zh-CN';
-      utter.onend = ()=> {
-        playAudioBtn.style.display='inline-block';
-        stopAudioBtn.style.display='none';
-      };
-      speechSynthesis.speak(utter);
-    });
-    stopAudioBtn.addEventListener('click', ()=> {
-      speechSynthesis.cancel();
-      playAudioBtn.style.display='inline-block';
-      stopAudioBtn.style.display='none';
-    });
+        if (data.reply) {
+          letter.style.display = "block";
+          actions.style.display = "flex";
+          letter.innerText = data.reply;
+        } else {
+          alert("生成失败，请稍后再试。");
+        }
+      });
 
-    // 收起回信
-    collapseBtn.addEventListener('click', ()=> {
-      speechSynthesis.cancel();
-      replyPage.style.display='none';
-      main.style.display='flex';
-      userInput.value = '';
-    });
-  </script>
+      voiceBtn.addEventListener("click", () => {
+        if (currentSpeech) {
+          speechSynthesis.cancel();
+          currentSpeech = null;
+          voiceBtn.innerText = "🔊 播放语音";
+        } else {
+          const text = letter.innerText;
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.lang = "zh-CN";
+          utter.rate = 1.0;
+          utter.onend = () => {
+            voiceBtn.innerText = "🔊 播放语音";
+            currentSpeech = null;
+          };
+          speechSynthesis.speak(utter);
+          currentSpeech = utter;
+          voiceBtn.innerText = "⏹ 停止播放";
+        }
+      });
 
-</body>
+      closeBtn.addEventListener("click", () => {
+        letter.style.display = "none";
+        actions.style.display = "none";
+        msgInput.value = "";
+      });
+    </script>
+  </body>
 </html>
