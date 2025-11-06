@@ -5,165 +5,65 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>未来回音 💌</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
+    * {margin:0;padding:0;box-sizing:border-box;}
     body {
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: radial-gradient(circle at center, #f5f2ef 40%, #d9d4cf 100%);
-      font-family: "PingFang SC", "Helvetica Neue", sans-serif;
-      overflow: hidden;
+      height:100vh;display:flex;justify-content:center;align-items:center;
+      background: radial-gradient(circle at center, #f7e6e8 45%, #d2a4a7 100%);
+      font-family: "PingFang SC","Helvetica Neue",sans-serif;
       transition: background 1.2s ease;
+      overflow:hidden;
     }
-
-    /* ---------- 信封动画 ---------- */
     .envelope {
-      width: 180px;
-      height: 120px;
-      background: #fff;
-      border: 2px solid rgba(255,255,255,0.8);
-      border-radius: 6px;
-      position: relative;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      width:180px;height:120px;background:#fff;border-radius:8px;
+      border:2px solid rgba(255,255,255,0.8);
+      box-shadow:0 6px 20px rgba(0,0,0,0.1);
       animation: shake 3s ease-in-out infinite;
-      cursor: pointer;
+      position:relative;cursor:pointer;
     }
-
-    .envelope::before, .envelope::after {
-      content: '';
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border-radius: 6px;
-      top: 0; left: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(245,245,245,0.8));
+    .envelope::before{
+      content:'';position:absolute;width:100%;height:100%;left:0;top:0;
+      clip-path:polygon(0 0,50% 60%,100% 0);
+      background:linear-gradient(135deg,#f7f7f7,#fafafa);
+      border-bottom:1px solid rgba(0,0,0,0.05);
     }
-
-    .envelope::before {
-      clip-path: polygon(0 0, 50% 55%, 100% 0);
-      border-bottom: 1px solid rgba(0,0,0,0.05);
+    @keyframes shake{
+      0%,100%{transform:rotate(0deg);}
+      25%{transform:rotate(2deg);}
+      50%{transform:rotate(-2deg);}
+      75%{transform:rotate(1deg);}
     }
-
-    @keyframes shake {
-      0%, 100% { transform: rotate(0deg); }
-      25% { transform: rotate(2deg); }
-      50% { transform: rotate(-2deg); }
-      75% { transform: rotate(1deg); }
+    .main,.reply-page{display:none;flex-direction:column;align-items:center;text-align:center;animation:fadeIn 1.2s ease forwards;}
+    h1{color:white;font-size:2.3em;letter-spacing:4px;margin-bottom:30px;text-shadow:0 0 10px rgba(255,255,255,0.6);}
+    .input-box{
+      background:rgba(255,255,255,0.3);backdrop-filter:blur(10px);
+      border-radius:20px;padding:25px;width:90%;max-width:450px;
+      display:flex;flex-direction:column;align-items:center;
+      box-shadow:0 10px 30px rgba(0,0,0,0.1);
     }
-
-    /* ---------- 输入页 ---------- */
-    .main {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      animation: fadeIn 1.5s ease forwards;
+    textarea{
+      width:100%;height:150px;border:none;border-radius:15px;padding:15px;
+      background:rgba(255,255,255,0.9);font-size:16px;outline:none;margin-bottom:15px;resize:none;
     }
-
-    h1 {
-      color: white;
-      font-size: 2.2em;
-      letter-spacing: 4px;
-      margin-bottom: 30px;
-      text-shadow: 0 0 10px rgba(255,255,255,0.6);
+    button{
+      background:rgba(255,255,255,0.35);backdrop-filter:blur(10px);
+      border:none;border-radius:25px;padding:12px 28px;font-size:16px;
+      transition:all 0.3s ease;cursor:pointer;color:#333;
     }
-
-    .input-box {
-      background: rgba(255, 255, 255, 0.3);
-      backdrop-filter: blur(8px);
-      border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      padding: 25px;
-      width: 90%;
-      max-width: 450px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+    button:hover{background:rgba(255,255,255,0.55);}
+    .letter{
+      background:rgba(255,255,255,0.9);
+      border-radius:15px;box-shadow:0 10px 30px rgba(0,0,0,0.1);
+      width:90%;max-width:500px;padding:25px;text-align:left;
+      line-height:1.8;font-size:15px;color:#333;margin-bottom:20px;
+      overflow-y:auto;max-height:300px;
     }
-
-    textarea {
-      width: 100%;
-      height: 150px;
-      border: none;
-      border-radius: 15px;
-      padding: 15px;
-      resize: none;
-      background: rgba(255,255,255,0.9);
-      font-size: 16px;
-      outline: none;
-      margin-bottom: 15px;
-    }
-
-    button {
-      background: rgba(255,255,255,0.35);
-      border: none;
-      backdrop-filter: blur(10px);
-      color: #333;
-      border-radius: 25px;
-      padding: 12px 28px;
-      font-size: 16px;
-      transition: all 0.3s ease;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: rgba(255,255,255,0.55);
-    }
-
-    /* ---------- 回信页 ---------- */
-    .reply-page {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      animation: fadeIn 1.2s ease;
-    }
-
-    .letter {
-      background: rgba(255,255,255,0.9);
-      border-radius: 15px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-      width: 90%;
-      max-width: 500px;
-      padding: 25px;
-      text-align: left;
-      line-height: 1.8;
-      font-size: 15px;
-      color: #333;
-      margin-bottom: 20px;
-      overflow-y: auto;
-      max-height: 300px;
-    }
-
-    .reply-controls {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-    }
-
-    .reply-controls button {
-      background: rgba(255,255,255,0.3);
-      color: #333;
-      border-radius: 20px;
-      padding: 10px 20px;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .reply-controls{display:flex;gap:12px;justify-content:center;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
   </style>
 </head>
 <body>
-  <!-- 开场信封 -->
   <div class="envelope" id="envelope"></div>
 
-  <!-- 主输入界面 -->
   <div class="main" id="main">
     <h1>未来回音 💌</h1>
     <div class="input-box">
@@ -172,7 +72,6 @@
     </div>
   </div>
 
-  <!-- 回信界面 -->
   <div class="reply-page" id="replyPage">
     <div class="letter" id="replyContent"></div>
     <div class="reply-controls">
@@ -183,74 +82,73 @@
   </div>
 
   <script>
-    const envelope = document.getElementById('envelope');
-    const main = document.getElementById('main');
-    const replyPage = document.getElementById('replyPage');
-    const generateBtn = document.getElementById('generateBtn');
-    const userInput = document.getElementById('userInput');
-    const replyContent = document.getElementById('replyContent');
-    const playAudioBtn = document.getElementById('playAudio');
-    const stopAudioBtn = document.getElementById('stopAudio');
-    const collapseBtn = document.getElementById('collapseBtn');
+    const envelope = document.getElementById("envelope");
+    const main = document.getElementById("main");
+    const replyPage = document.getElementById("replyPage");
+    const generateBtn = document.getElementById("generateBtn");
+    const userInput = document.getElementById("userInput");
+    const replyContent = document.getElementById("replyContent");
+    const playAudioBtn = document.getElementById("playAudio");
+    const stopAudioBtn = document.getElementById("stopAudio");
+    const collapseBtn = document.getElementById("collapseBtn");
+
     let audio;
 
     // 信封点击或自动展开
     const showMain = () => {
-      envelope.style.display = 'none';
-      main.style.display = 'flex';
+      envelope.style.display = "none";
+      main.style.display = "flex";
     };
     envelope.onclick = showMain;
     setTimeout(showMain, 3000);
 
-    // 生成未来回信
+    // 调用后端生成回信
     generateBtn.onclick = async () => {
       const text = userInput.value.trim();
-      if (!text) return alert('请写点什么吧 💭');
-      main.style.display = 'none';
-      replyPage.style.display = 'flex';
+      if (!text) return alert("请写点什么吧 💭");
+      main.style.display = "none";
+      replyPage.style.display = "flex";
+      replyContent.textContent = "生成中，请稍候... ✨";
 
-      // 模拟 AI 回信内容（后端 /api/generate 可接智谱）
-      const replyText = `亲爱的现在的我：
-
-你好呀。我是来自未来的你。  
-回头看，你经历的那些不确定与不安，其实都成了你最温柔的底色。  
-未来的我们学会了慢下来，也学会了不去取悦世界，而去拥抱自己。  
-你现在的坚持，会成为未来我最珍惜的勇气。  
-请继续带着微笑前行，好吗？
-
-—— 来自未来的你 🌷`;
-
-      replyContent.textContent = replyText;
+      try {
+        const res = await fetch("/api/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: text })
+        });
+        const data = await res.json();
+        replyContent.textContent = data.reply || "生成失败，请稍后再试。";
+      } catch (err) {
+        replyContent.textContent = "出错了，请稍后重试。";
+      }
     };
 
     // 播放语音
     playAudioBtn.onclick = () => {
       const text = replyContent.textContent;
-      playAudioBtn.style.display = 'none';
-      stopAudioBtn.style.display = 'inline-block';
+      playAudioBtn.style.display = "none";
+      stopAudioBtn.style.display = "inline-block";
       const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = 'zh-CN';
+      utter.lang = "zh-CN";
       utter.rate = 1;
       utter.onend = () => {
-        playAudioBtn.style.display = 'inline-block';
-        stopAudioBtn.style.display = 'none';
+        playAudioBtn.style.display = "inline-block";
+        stopAudioBtn.style.display = "none";
       };
       speechSynthesis.speak(utter);
       audio = utter;
     };
 
-    // 停止语音
     stopAudioBtn.onclick = () => {
       speechSynthesis.cancel();
-      playAudioBtn.style.display = 'inline-block';
-      stopAudioBtn.style.display = 'none';
+      playAudioBtn.style.display = "inline-block";
+      stopAudioBtn.style.display = "none";
     };
 
-    // 收起回信
     collapseBtn.onclick = () => {
-      replyPage.style.display = 'none';
-      main.style.display = 'flex';
-      userInput.value = '';
+      replyPage.style.display = "none";
+      main.style.display = "flex";
+      userInput.value = "";
     };
   </script>
 </body>
