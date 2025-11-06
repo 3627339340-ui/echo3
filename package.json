@@ -1,5 +1,5 @@
 {
-  "name": "echo4",
+  "name": "future-echo",
   "version": "1.0.0",
   "type": "module",
   "main": "server.js",
@@ -7,8 +7,9 @@
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.19.2",
+    "axios": "^1.7.7",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
-    "axios": "^1.7.7"
+    "express": "^4.19.2"
   }
 }
