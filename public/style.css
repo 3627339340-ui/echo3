@@ -30,28 +30,29 @@ body {
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 
-/* 太阳月亮特效 */
+/* 太阳月亮特效 - 更加柔和 */
 .celestial-body {
   position: absolute;
   border-radius: 50%;
   z-index: 1;
   pointer-events: none;
   transition: all 1.5s ease;
+  filter: blur(1px);
 }
 
 #sun {
-  background: radial-gradient(circle at 30% 30%, #FFEB3B, #FF9800);
-  width: 120px;
-  height: 120px;
-  box-shadow: 0 0 60px rgba(255, 235, 59, 0.6);
+  background: radial-gradient(circle at 30% 30%, rgba(255, 235, 59, 0.9), rgba(255, 152, 0, 0.7));
+  width: 100px;
+  height: 100px;
+  box-shadow: 0 0 80px rgba(255, 235, 59, 0.4);
   opacity: 0;
 }
 
 #moon {
-  background: radial-gradient(circle at 30% 30%, #E0E0E0, #BDBDBD);
-  width: 100px;
-  height: 100px;
-  box-shadow: 0 0 40px rgba(224, 224, 224, 0.4);
+  background: radial-gradient(circle at 30% 30%, rgba(245, 245, 245, 0.9), rgba(224, 224, 224, 0.7));
+  width: 80px;
+  height: 80px;
+  box-shadow: 0 0 60px rgba(255, 255, 255, 0.3);
   opacity: 0;
 }
 
@@ -59,8 +60,8 @@ body {
 .floating-light {
   position: absolute;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
-  filter: blur(25px);
+  background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+  filter: blur(20px);
   z-index: 0;
   pointer-events: none;
 }
